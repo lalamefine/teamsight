@@ -1,25 +1,48 @@
-
 services:
 ###> doctrine/doctrine-bundle ###
   database:
-    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    image: postgres:16-alpine
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
-    healthcheck:
-      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
-      timeout: 5s
-      retries: 5
-      start_period: 60s
+      POSTGRES_DB: teamsight
+      POSTGRES_PASSWORD: InsecureLocalPassword
+      POSTGRES_USER: teamsight
+    ports:
+      - "5432:5432"
     volumes:
-      - database_data:/var/lib/postgresql/data:rw
+      - teamsight_data:/var/lib/postgresql/data:rw
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       # - ./docker/db/data:/var/lib/postgresql/data:rw
 ###< doctrine/doctrine-bundle ###
 
+  frankenphp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frankenruntime
+    environment:
+      FRANKENPHP_CONFIG: "worker ./public/index.php"
+      APP_RUNTIME: "Runtime\\FrankenPhpSymfony\\Runtime"
+    volumes:
+      - .:/app
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    # commentez la ligne suivante en production, elle permet d'avoir de beaux logs lisibles en dev
+    tty: true
+
+###> symfony/mailer ###
+  # mailer:
+  #   image: axllent/mailpit
+  #   ports:
+  #     - "1025"
+  #     - "8025"
+  #   environment:
+  #     MP_SMTP_AUTH_ACCEPT_ANY: 1
+  #     MP_SMTP_AUTH_ALLOW_INSECURE: 1
+###< symfony/mailer ###
+
 volumes:
 ###> doctrine/doctrine-bundle ###
-  database_data:
+  teamsight_data:
 ###< doctrine/doctrine-bundle ###

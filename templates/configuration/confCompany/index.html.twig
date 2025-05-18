@@ -1,0 +1,279 @@
+{# filepath: d:\WSP_Code\teamsight\templates\configuration\index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Configuration{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-column align-items-center mt-3">
+        <div class="container px-4 py-2 w-100 col-lg-10 d-flex flex-row position-relative">
+            {# Remplacé le commentaire @SideMenu() #}
+            <form action="{{ path('app_conf') }}" method="post" id="conf-form" 
+                class="bg-white shadow p-4 rounded w-100" 
+                hx-post="{{ path('app_conf') }}" hx-swap="show:top">
+                
+                <h6 id="conf-quest" class="border-bottom pb-2 mb-2">Configuration des questionnaires</h6>
+                <div>
+                    <input type="checkbox" {% if companyConfig.isQuestFdb360 %}checked="checked"{% endif %} 
+                        class="form-check-input" id="ev-fd360" name="QuestFdb360"/>
+                    <label class="ms-2" for="ev-fd360">Feedback 360</label>
+                    <div class="small text-muted ms-4">
+                        Observation d'un salarié par ses pairs, ses subordonnés et ses supérieurs hiérarchiques.<br/>
+                        <a href="{{ path('app_conf_templates_360') }}" target="_blank" class="link-secondary align-items-center text-decoration-none">
+                            <span>Gestion des modèles prédéfinis</span>
+                            <i class="bi bi-box-arrow-up-right fs-6 ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <div id="obs-profile-use" class="ps-4">
+                        <div class="d-flex align-items-center gap-2 my-1">
+                            <span>Profils d'observateurs :</span>
+                            <button type="button" class="btn btn-outline-secondary border-0 btn-sm px-2" 
+                                data-bs-toggle="modal" data-bs-target="#modalPickDefObservers">
+                                <i class="bi bi-pencil-square fs-6"></i>
+                            </button>
+                        </div>
+                        <div id="default-observers-preview" class="flex-grow-1">
+                            {% for profile in company.obsProfiles %}
+                                <span class="badge bg-secondary m-1 text-truncate">{{ profile.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Bootstrap Modal -->
+                    <div class="modal fade" id="modalPickDefObservers" tabindex="-1" 
+                        aria-labelledby="modalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <div id="defaut-observers">
+                                        {% for profile in company.obsProfiles %}
+                                            <div class="answer-item input-group mt-1">
+                                                <input type="text" autoconcat-in="#default-observers-preview" value="{{ profile.name }}" 
+                                                    class="flex-grow-1 form-control form-control-sm" placeholder="Libellé" name="obsp_lib[]" />
+                                                <input type="hidden" value="{{ profile.id }}" 
+                                                    class="form-control form-control-sm" name="obsp_id[]"/> 
+                                                <select class="form-select form-select-sm" {% if not profile.editable %}disabled{% endif %} name="obsp_anon[]">
+                                                    <option value="on" {% if profile.isAnonymous %}selected{% endif %}>Réponses anonymes</option>
+                                                    <option value="off" {% if not profile.isAnonymous %}selected{% endif %}>Réponses transparentes</option>
+                                                </select>
+                                                {% if profile.editable %}
+                                                    <button class="btn btn-sm btn-outline-danger"><i class="bi bi-dash"></i></button>
+                                                {% else %}
+                                                    <input type="hidden" value="off" name="obsp_anon[]"/>
+                                                    {% if profile.profileCanValidateReport %}
+                                                        <input type="text" value="Valide le rapport" disabled class="form-control form-control-sm"/>
+                                                    {% elseif profile.canSeeValidatedReport %}
+                                                        <input type="text" value="Voit le rapport validé" disabled class="form-control form-control-sm"/>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                        <div class="mt-1 d-flex justify-content-between">
+                                            <button id="add-default-observer" type="button" 
+                                                class="btn btn-outline-secondary btn-sm px-3 py-1">
+                                                <i class="bi bi-plus"></i>
+                                                Ajouter
+                                            </button>
+                                            <button type="button" class="btn btn-outline-primary btn-sm px-3 py-1" 
+                                                data-bs-dismiss="modal">
+                                                <i class="bi bi-check-lg"></i>
+                                                Sauvegarder
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        function updatePreview(previewSelector) {
+                            let target = $(previewSelector);
+                            let text = "";
+                            $("input[autoconcat-in='" + previewSelector + "']").each(function() {
+                                if ($(this).val() != "") {
+                                    text += `<span class="badge bg-secondary m-1 text-truncate">` + $(this).val() + `</span>\n`;
+                                }
+                            });
+                            target.html(text);
+                        }
+
+                        $(function() {
+                            $(document).on('input', 'input[autoconcat-in]', function() {
+                                updatePreview($(this).attr('autoconcat-in'));
+                            });
+                        });
+
+                        function addProfile(onDiv, autoconcatIn, object = null) {
+                            if (object == null) {
+                                object = {
+                                    id: 'new',
+                                    ProfileCanValidateReport: false,
+                                    IsAnnonymous: true,
+                                    Editable: true,
+                                    CanSeeValidatedReport: false,
+                                    Name: ""
+                                }
+                            }
+                            let newAnsDiv = $(`<div class="answer-item input-group mt-1">
+                                <input type="text" autoconcat-in="` + autoconcatIn + `" value="` + object.Name + `" 
+                                    class="flex-grow-1 form-control form-control-sm" placeholder="Libellé" name="obsp_lib[]" />
+                                <input type="hidden" value="` + object.id + `" 
+                                    class="form-control form-control-sm" name="obsp_id[]"/> 
+                                <select class="form-select form-select-sm" ` + (!object.Editable ? `disabled` : ``) + ` name="obsp_anon[]">
+                                    <option value="on" ` + (object.IsAnnonymous ? `selected` : '') + `>Réponses anonymes</option>
+                                    <option value="off" ` + (!object.IsAnnonymous ? `selected` : '') + `>Réponses transparentes</option>
+                                </select>
+                                ` + (object.Editable ? 
+                                    `<button class="btn btn-sm btn-outline-danger"><i class="bi bi-dash"></i></button>` : 
+                                    (`<input type="hidden" value="off" name="obsp_anon[]"/>` + 
+                                        (object.ProfileCanValidateReport ? 
+                                            `<input type="text" value="Valide le rapport" disabled class="form-control form-control-sm"/>` : 
+                                            (object.CanSeeValidatedReport ? 
+                                                `<input type="text" value="Voit le rapport validé" disabled class="form-control form-control-sm"/>` : 
+                                                ``
+                                            )
+                                        )
+                                    )
+                                ) + `
+                            </div>`);
+                            onDiv.append(newAnsDiv);
+                        }
+
+                        $(function() {
+                            let defProfile = $('#defaut-observers');
+                            $('#add-default-observer').click(function() {
+                                addProfile(defProfile, "#default-observers-preview");
+                            });
+
+                            defProfile.on('click', '.btn-outline-danger', function() {
+                                let answerDiv = $(this).closest('.answer-item');
+                                let associatedPreview = answerDiv.find('[autoconcat-in]').attr('autoconcat-in');
+                                $('#defaut-observers').append(
+                                    `<input type="hidden" name="obsp_del[]" value="` + 
+                                    answerDiv.find('input[name="obsp_id[]"]').val() + `"/>`
+                                );
+                                answerDiv.remove();
+                                if (associatedPreview) {
+                                    updatePreview(associatedPreview);
+                                }
+                            });
+                        });
+
+                        $(document).ready(function() {
+                            var myModal = new bootstrap.Modal(document.getElementById('modalPickDefObservers'));
+                        });
+                    </script>
+                </div>
+                <div>
+                    <input type="checkbox" {% if companyConfig.isQuestComp %}checked="checked"{% endif %} 
+                        class="form-check-input" id="ev-comp" name="QuestComp"/>
+                    <label class="ms-2" for="ev-comp">Suivi des compétences</label>
+                    <div class="small text-muted ms-4">
+                        Suivi des compétences des salariés et de leur évolution dans le temps (Vision salarié et manager).<br/>
+                        <a href="{{ path('app_conf_referentiel_comp') }}" target="_blank" class="link-secondary align-items-center text-decoration-none">
+                            <span>Gestion du référentiel</span>
+                            <i class="bi bi-box-arrow-up-right fs-6 ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <input type="checkbox" {% if companyConfig.isQuestEA %}checked="checked"{% endif %} 
+                        class="form-check-input" id="ev-ea" name="QuestEa"/>
+                    <label class="ms-2" for="ev-ea">Evaluation objectifs et performance</label>
+                    <div class="small text-muted ms-4">
+                        Evaluation des objectifs et de la performance des salariés (Vision salarié et manager).<br/>
+                        <a href="{{ path('app_conf_templates_ea') }}" target="_blank" class="link-secondary align-items-center text-decoration-none">
+                            <span>Gestion des modèles prédéfinis</span>
+                            <i class="bi bi-box-arrow-up-right fs-6 ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <input type="checkbox" {% if companyConfig.isQuestPerc %}checked="checked"{% endif %} 
+                        class="form-check-input" id="ev-perc" name="QuestPerc"/>
+                    <label class="ms-2" for="ev-perc">Suivi perception entreprise et environnement de travail</label>
+                    <div class="small text-muted ms-4">
+                        Sondage annonyme de la perception des salariés vis à vis de l'entreprise et de leur environnement de travail.<br/>
+                        <a href="{{ path('app_conf_templates_survey') }}" target="_blank" class="link-secondary align-items-center text-decoration-none w-auto">
+                            <span>Gestion des questions</span>
+                            <i class="bi bi-box-arrow-up-right fs-6 ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <h6 id="gest-user" class="border-bottom pt-4 pb-2">Configuration de la gestion des utilisateurs</h6>
+                <div class="ps-3 d-flex mb-3">
+                    <div class="float-none col-4 px-2 fs-6">Identifiant unique des salariés</div>
+                    <select class="form-select" name="AgtIdType">
+                        <option value="email" {% if companyConfig.agtIdType == 'email' %}selected{% endif %}>Email</option>
+                        <option value="company" {% if companyConfig.agtIdType == 'company' %}selected{% endif %}>Fourni par l'entreprise</option>
+                        <option value="app" {% if companyConfig.agtIdType == 'app' %}selected{% endif %}>Utiliser les identifiants Teamsight</option>
+                    </select>
+                </div>
+                <div class="ps-3 d-flex mb-3">
+                    <div class="float-none col-4 px-2 fs-6">Authentification des salariés</div>
+                    <select class="form-select" name="AgtAuthType">
+                        <option value="email-pass" {% if companyConfig.agtAuthType == 'email-pass' %}selected{% endif %}>Page de connexion Email + mot de passe</option>
+                        <option value="OAuth" disabled>OAuth 2.0 (à venir)</option>
+                        <option value="OIDC" disabled>Open ID Connect (à venir)</option>
+                    </select>
+                </div>
+                <div class="ps-3 d-flex mb-3">
+                    <div class="float-none col-4 px-2 fs-6">Système de gestion des comptes utillisateur</div>
+                    <select class="form-select" name="AccountSystem">
+                        <option value="WebUI" {% if companyConfig.accountSystem == 'WebUI' %}selected{% endif %}>Gestion via l'interface web</option>
+                        <option value="CSV" {% if companyConfig.accountSystem == 'CSV' %}selected{% endif %}>Import manuel csv UTF8</option>
+                        <option value="Webhook" disabled>Webhook csv UTF8 (à venir)</option>
+                        <option value="API" disabled>Via une API (à venir)</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" {% if companyConfig.isUseTeamGrouping %}checked="checked"{% endif %} 
+                        class="form-check-input" id="eq-grp" name="UseAgtEquipe"/>
+                    <label class="ms-2" for="eq-grp">Regrouper les utilisateurs en équipes</label>
+                    <div class="small text-muted ms-4">
+                        Ajoute un champ de selection d'équipe pour chaque utillisateur
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" {% if companyConfig.isUseCompRef %}checked="checked"{% endif %} 
+                        class="form-check-input" id="with-metier" name="UseCompRef"/>
+                    <label class="ms-2" for="with-metier">Utilliser un référentiel de compétence par métier</label>
+                    <div class="small text-muted ms-4">
+                        Ajoute un champ "métier" pour chaque utillisateur, permet d'associer des compétences prédéfinies à chaque métier
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="ms-2" for="data-retention">Durée de conservation des données :</label>
+                    <input type="number" class="form-control form-control-sm d-inline-block" 
+                        style="width: 5rem;" id="data-retention" name="DataRetention" 
+                        value="{{ companyConfig.dataRetention }}" min="6" max="60" step="1"/>
+                    <span>mois</span>
+                    <div class="small text-muted ms-4">
+                        Les données nominatives (feedback, compétences, évaluation) seront supprimées après le délai indiqué.
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" {% if companyConfig.isUseAccountDynCamp %}checked="checked"{% endif %} 
+                        class="form-check-input" id="dyn-camp" name="UseAccountDynCamp"/>
+                    <label class="ms-2" for="dyn-camp">Autoriser l'ajout manuel durant la création des campagne</label>
+                    <div class="small text-muted ms-4">
+                        Propose une page d'ajout manuel aux superviseur de campagne
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" {% if companyConfig.isUseAccountDynPan %}checked="checked"{% endif %} 
+                        class="form-check-input" id="dyn-pan" name="UseAccountDynPan"/>
+                    <label class="ms-2" for="dyn-pan">Autoriser l'ajout manuel durant la constitution des panels</label>
+                    <div class="small text-muted ms-4">
+                        Propose une page d'ajout manuel aux salariés constituants les panels d'observation
+                    </div>
+                </div>
+
+                <button id="submit" type="submit" class="btn btn-primary mt-4">Sauvegarder les modifications</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
