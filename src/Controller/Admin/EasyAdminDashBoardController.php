@@ -48,12 +48,16 @@ class EasyAdminDashBoardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
-        yield MenuItem::linkToCrud('Users', 'fas fa-list', WebUser::class);
-        yield MenuItem::subMenu('Companies', 'fas fa-list')->setSubItems([
-            MenuItem::linkToCrud('Companies', 'fas fa-list', Company::class),
-            MenuItem::linkToCrud('Config', 'fa fa-list', CompanyConfig::class),
-            MenuItem::linkToCrud('Profiles', 'fa fa-list', ObsProfile::class),
-        ]);
+        // Automatically yield MenuItems for all entities in App\Entity namespace
+        $entityDir = $this->getParameter('kernel.project_dir') . '/src/Entity';
+        foreach (scandir($entityDir) as $file) {
+            if (preg_match('/^([A-Za-z0-9_]+)\.php$/', $file, $matches)) {
+                $className = 'App\\Entity\\' . $matches[1];
+                $AdminControllerClassName = 'App\\Controller\\Admin\\' . $matches[1] . 'CrudController';
+                if (class_exists($className) && class_exists($AdminControllerClassName)) {
+                    yield MenuItem::linkToCrud($matches[1], 'fas fa-database', $className);
+                }
+            }
+        }
     }
 }

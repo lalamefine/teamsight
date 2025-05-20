@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class TemplateSurveyController extends AbstractController
 {
-    #[Route('/conf/templateSurvey', name: 'app_conf_templates_survey')]
+    #[Route('/cf/templateSurvey', name: 'app_conf_templates_survey')]
     public function index(): Response
     {
         return $this->render('configuration/templateSurvey/index.html.twig', []);

@@ -7,12 +7,44 @@
     <div class="bg-white shadow p-4 rounded w-100" >
         <h1>Configuration</h1>
         <ul>
+            {% if is_granted('ROLE_ADMIN') %}
             <li>
-                <a href="{{ path('admin') }}" hx-boost="false">Administration globale</a>
+                <a href="{{ path('admin') }}" hx-boost="false">Dashboard super-administrateur</a>
             </li>
+            {% endif %}
+            {% if is_granted('ROLE_ENT_MANAGER') %}
             <li>
-                <a href="{{ path('app_conf_company') }}" hx-boost="false">Configuration</a>
+                <a href="{{ path('app_conf_company') }}" hx-boost="false">Configuration Entreprise</a>
             </li>
+            {% endif %}
+            {% if is_granted('ROLE_T_360_MAN') %}
+                {% if userCompanyConfig.questFdb360 %}
+                    <li>
+                        <a href="{{ path('app_conf_templates_360_list') }}">Templates Feedback 360</a>
+                    </li>
+                {% endif %}
+            {% endif %}
+            {% if is_granted('ROLE_T_EA_MAN') %}
+                {% if userCompanyConfig.questEA %}
+                    <li>
+                        <a href="{{ path('app_conf_templates_ea') }}">Templates Entretien Annuel</a>
+                    </li>
+                {% endif %}
+            {% endif %}
+            {% if is_granted('ROLE_T_REFCOM_MAN') %}
+                {% if userCompanyConfig.questComp %}
+                    <li>
+                        <a href="{{ path('app_conf_referentiel_comp') }}">Référentiel de compétences</a>
+                    </li>
+                {% endif %}
+            {% endif %}
+            {% if is_granted('ROLE_T_ENSURV_MAN') %}
+                {% if userCompanyConfig.questPerc %}
+                    <li>
+                        <a href="{{ path('app_conf_templates_survey') }}">Questionnaires perception de l'entreprise</a>
+                    </li>
+                {% endif %}
+            {% endif %}
         </ul>
     </div>
 </div>

@@ -1,0 +1,14 @@
+{% for question in questions %}
+<div class="d-flex align-items-center mb-2">
+    <span class="question-number text-muted px-2">
+        {{ loop.index }} - 
+    </span>
+    <span>{{ question.libelle }}</span>
+    <button hx-get="{{ path('app_conf_templates_360_question', { template: template.id, question360: question.id }) }}" 
+        hx-target="#question-edit-modal" hx-trigger="click" data-bs-toggle="modal"
+        data-bs-target="#question-edit-modal"
+        class="btn btn-sm btn-outline-primary border-0 btn-sm mx-3">
+        <i class="bi bi-pencil"></i>
+    </button>
+</div>   
+{% endfor %}

@@ -6,6 +6,7 @@ use App\Entity\Company;
 use App\Entity\CompanyConfig;
 use App\Entity\ObsProfile;
 use App\Entity\WebUser;
+use App\Repository\ObsProfileRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +16,12 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 final class CompanyConfController extends AbstractController
 {
-    #[Route('/conf/company', name: 'app_conf_company')]
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly ObsProfileRepository $obsProfileRepository,
+    ){}
+
+    #[Route('/cf/company', name: 'app_conf_company')]
     public function index(Request $request, EntityManagerInterface $em, #[CurrentUser] ?WebUser $user = null): Response
     {
         // Récupérer la company active pour l'utilisateur courant
@@ -42,7 +48,7 @@ final class CompanyConfController extends AbstractController
             $formData = $request->request->all();
             
             // Traiter les profils d'observateurs si nécessaire
-            if (isset($formData['obsp_lib']) && isset($formData['obsp_uuid']) && isset($formData['obsp_anon'])) {
+            if (isset($formData['obsp_lib']) && isset($formData['obsp_id']) && isset($formData['obsp_anon'])) {
                 $this->handleObserverProfiles($formData, $company, $em);
             }
             
@@ -68,7 +74,7 @@ final class CompanyConfController extends AbstractController
             $this->addFlash('success', 'Configuration enregistrée avec succès.');
         }
         
-        return $this->render('configuration/index.html.twig', [
+        return $this->render('configuration/confCompany/index.html.twig', [
             'company' => $company,
             'companyConfig' => $companyConfig,
             'confSaved' => $confSaved
@@ -80,12 +86,10 @@ final class CompanyConfController extends AbstractController
      */
     private function handleObserverProfiles(array $formData, Company $company, EntityManagerInterface $em): void
     {
-        $profileRepo = $em->getRepository(ObsProfile::class);
-        
         // Supprimer les profils marqués pour suppression
         if (isset($formData['obsp_del']) && is_array($formData['obsp_del'])) {
             foreach ($formData['obsp_del'] as $id) {
-                $profile = $profileRepo->findOneBy(['id' => $id, 'company' => $company]);
+                $profile = $this->obsProfileRepository->findOneBy(['id' => $id, 'company' => $company]);
                 if ($profile && $profile->isEditable()) {
                     $em->remove($profile);
                 }
@@ -105,14 +109,14 @@ final class CompanyConfController extends AbstractController
                 $em->persist($profile);
             } else {
                 // Profil existant
-                $profile = $profileRepo->findOneBy(['id' => $id, 'company' => $company]);
+                $profile = $this->obsProfileRepository->findOneBy(['id' => $id, 'company' => $company]);
                 if (!$profile || !$profile->isEditable()) {
                     continue;
                 }
             }
             
             $profile->setName($name);
-            $profile->setIsAnonymous($isAnonymous);
+            $profile->setAnonymous($isAnonymous);
         }
     }
 }

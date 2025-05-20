@@ -7,9 +7,8 @@
     <div class="d-flex flex-column align-items-center mt-3">
         <div class="container px-4 py-2 w-100 col-lg-10 d-flex flex-row position-relative">
             {# Remplacé le commentaire @SideMenu() #}
-            <form action="{{ path('app_conf') }}" method="post" id="conf-form" 
-                class="bg-white shadow p-4 rounded w-100" 
-                hx-post="{{ path('app_conf') }}" hx-swap="show:top">
+            <form method="post" id="conf-form" 
+                class="bg-white shadow p-4 rounded w-100" hx-swap="show:top">
                 
                 <h6 id="conf-quest" class="border-bottom pb-2 mb-2">Configuration des questionnaires</h6>
                 <div>
@@ -18,7 +17,7 @@
                     <label class="ms-2" for="ev-fd360">Feedback 360</label>
                     <div class="small text-muted ms-4">
                         Observation d'un salarié par ses pairs, ses subordonnés et ses supérieurs hiérarchiques.<br/>
-                        <a href="{{ path('app_conf_templates_360') }}" target="_blank" class="link-secondary align-items-center text-decoration-none">
+                        <a href="{{ path('app_conf_templates_360_list') }}" target="_blank" class="link-secondary align-items-center text-decoration-none">
                             <span>Gestion des modèles prédéfinis</span>
                             <i class="bi bi-box-arrow-up-right fs-6 ms-1"></i>
                         </a>
@@ -46,47 +45,24 @@
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-body">
+                                    <div class="mt-1 d-flex justify-content-between">
+                                        <button id="add-default-observer" type="button" 
+                                            class="btn btn-outline-secondary btn-sm px-3 py-1">
+                                            <i class="bi bi-plus"></i>
+                                            Ajouter
+                                        </button>
+                                        <button type="submit" class="btn btn-outline-primary btn-sm px-3 py-1" 
+                                            data-bs-dismiss="modal">
+                                            <i class="bi bi-check-lg"></i>
+                                            Sauvegarder
+                                        </button>
+                                    </div>
                                     <div id="defaut-observers">
-                                        {% for profile in company.obsProfiles %}
-                                            <div class="answer-item input-group mt-1">
-                                                <input type="text" autoconcat-in="#default-observers-preview" value="{{ profile.name }}" 
-                                                    class="flex-grow-1 form-control form-control-sm" placeholder="Libellé" name="obsp_lib[]" />
-                                                <input type="hidden" value="{{ profile.id }}" 
-                                                    class="form-control form-control-sm" name="obsp_id[]"/> 
-                                                <select class="form-select form-select-sm" {% if not profile.editable %}disabled{% endif %} name="obsp_anon[]">
-                                                    <option value="on" {% if profile.isAnonymous %}selected{% endif %}>Réponses anonymes</option>
-                                                    <option value="off" {% if not profile.isAnonymous %}selected{% endif %}>Réponses transparentes</option>
-                                                </select>
-                                                {% if profile.editable %}
-                                                    <button class="btn btn-sm btn-outline-danger"><i class="bi bi-dash"></i></button>
-                                                {% else %}
-                                                    <input type="hidden" value="off" name="obsp_anon[]"/>
-                                                    {% if profile.profileCanValidateReport %}
-                                                        <input type="text" value="Valide le rapport" disabled class="form-control form-control-sm"/>
-                                                    {% elseif profile.canSeeValidatedReport %}
-                                                        <input type="text" value="Voit le rapport validé" disabled class="form-control form-control-sm"/>
-                                                    {% endif %}
-                                                {% endif %}
-                                            </div>
-                                        {% endfor %}
-                                        <div class="mt-1 d-flex justify-content-between">
-                                            <button id="add-default-observer" type="button" 
-                                                class="btn btn-outline-secondary btn-sm px-3 py-1">
-                                                <i class="bi bi-plus"></i>
-                                                Ajouter
-                                            </button>
-                                            <button type="button" class="btn btn-outline-primary btn-sm px-3 py-1" 
-                                                data-bs-dismiss="modal">
-                                                <i class="bi bi-check-lg"></i>
-                                                Sauvegarder
-                                            </button>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <script>
                         function updatePreview(previewSelector) {
                             let target = $(previewSelector);
@@ -109,8 +85,8 @@
                             if (object == null) {
                                 object = {
                                     id: 'new',
-                                    ProfileCanValidateReport: false,
-                                    IsAnnonymous: true,
+                                    canValidateReport: false,
+                                    IsAnonymous: true,
                                     Editable: true,
                                     CanSeeValidatedReport: false,
                                     Name: ""
@@ -122,13 +98,13 @@
                                 <input type="hidden" value="` + object.id + `" 
                                     class="form-control form-control-sm" name="obsp_id[]"/> 
                                 <select class="form-select form-select-sm" ` + (!object.Editable ? `disabled` : ``) + ` name="obsp_anon[]">
-                                    <option value="on" ` + (object.IsAnnonymous ? `selected` : '') + `>Réponses anonymes</option>
-                                    <option value="off" ` + (!object.IsAnnonymous ? `selected` : '') + `>Réponses transparentes</option>
+                                    <option value="on" ` + (object.IsAnonymous ? `selected` : '') + `>Réponses anonymes</option>
+                                    <option value="off" ` + (!object.IsAnonymous ? `selected` : '') + `>Réponses transparentes</option>
                                 </select>
                                 ` + (object.Editable ? 
                                     `<button class="btn btn-sm btn-outline-danger"><i class="bi bi-dash"></i></button>` : 
                                     (`<input type="hidden" value="off" name="obsp_anon[]"/>` + 
-                                        (object.ProfileCanValidateReport ? 
+                                        (object.canValidateReport ? 
                                             `<input type="text" value="Valide le rapport" disabled class="form-control form-control-sm"/>` : 
                                             (object.CanSeeValidatedReport ? 
                                                 `<input type="text" value="Voit le rapport validé" disabled class="form-control form-control-sm"/>` : 
@@ -165,6 +141,19 @@
                             var myModal = new bootstrap.Modal(document.getElementById('modalPickDefObservers'));
                         });
                     </script>
+
+                    {% for profile in company.obsProfiles %}
+                        <script>
+                            addProfile($('#defaut-observers'), "#default-observers-preview", {
+                                id: '{{ profile.id }}',
+                                canValidateReport: {{ profile.canValidateReport ? 'true' : 'false' }},
+                                IsAnonymous: {{ profile.IsAnonymous ? 'true' : 'false' }},
+                                Editable: {{ profile.Editable ? 'true' : 'false' }},
+                                CanSeeValidatedReport: {{ profile.CanSeeValidatedReport ? 'true' : 'false' }},
+                                Name: "{{ profile.name }}"
+                            });
+                        </script>
+                    {% endfor %}
                 </div>
                 <div>
                     <input type="checkbox" {% if companyConfig.isQuestComp %}checked="checked"{% endif %} 

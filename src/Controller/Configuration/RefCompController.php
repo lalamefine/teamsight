@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class RefCompController extends AbstractController
 {
-    #[Route('/conf/refComp', name: 'app_conf_referentiel_comp')]
+    #[Route('/cf/refComp', name: 'app_conf_referentiel_comp')]
     public function index(): Response
     {
         return $this->render('configuration/referentielComp/index.html.twig', []);

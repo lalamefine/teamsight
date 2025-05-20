@@ -1,10 +1,46 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello TemplateController!{% endblock %}
+{% block title %}Configuration des templates de FeedBack 360{% endblock %}
 
 {% block body %}
-
-<div class="example-wrapper">
-
-</div>
+    <div class="d-flex flex-column align-items-center mt-3">
+      <div class="container px-4 py-2 w-100 col-lg-10 d-flex flex-row gap-2 position-relative">
+        <div class="col-md-3">
+          <div class="sticky-top">
+            {% if app.user.company != null %}
+              <div class="rounded-top bg-primary px-2 py-1 text-white"> Templates {{app.user.company.name}} </div>
+              <div class="rounded-bottom bg-light overflow-auto" style="max-height: 24rem;">
+                <div class="p-2">
+                  {% for template in app.user.company.template360s %}
+                    <a href="{{ path('app_conf_templates_360', {selectedTemplateId:template.id}) }}" class="btn btn-outline-secondary btn-sm w-100 mb-1">
+                      {{ template.name }}
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                  {% endfor %}
+                  <a href="{{ path('app_conf_templates_360', {selectedTemplateId:'new'}) }}" class="btn btn-outline-secondary btn-sm w-100">
+                    <i class="bi bi-plus"></i>
+                    Nouveau
+                  </a>
+                </div>
+              </div>
+            {% endif %}
+            {# <div class="bg-primary p-1 mt-2 mb-1 text-white"> Exemples Teamsight </div>
+            <div class="bg-light overflow-auto p-2" style="max-height: 24rem;">
+              
+            </div> #}
+          </div>
+        </div>
+        <div id="template-view" class="bg-light rounded w-100 p-2 mb-5" >
+            {% if selectedTemplate != null %}
+                {% include 'configuration/template360/aTemplate.html.twig' with { template: selectedTemplate, company: app.user.company } %}
+            {% elseif newTemplate %}
+                {% include 'configuration/template360/aTemplate.html.twig' with { template: null, company: app.user.company } %}
+            {% else %}
+                <div class="text-center">
+                    Selectionner un template à modifier ou créer un nouveau
+                </div>
+            {% endif %}
+        </div>
+      </div>
+    </div>
 {% endblock %}

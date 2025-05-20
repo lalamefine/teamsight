@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class TemplateEAController extends AbstractController
 {
-    #[Route('/conf/templateEA', name: 'app_conf_templates_ea')]
+    #[Route('/cf/templateEA', name: 'app_conf_templates_ea')]
     public function index(): Response
     {
         return $this->render('configuration/templateEA/index.html.twig', []);

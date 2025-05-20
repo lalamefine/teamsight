@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CompanyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -24,7 +23,7 @@ class Company
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::SIMPLE_ARRAY, options: ['default' => '[]'])]
-    private array $enabledFeatures = [];
+    private ?array $enabledFeatures = ['*'];
 
     /**
      * @var Collection<int, WebUser>
@@ -41,9 +40,21 @@ class Company
     #[ORM\OneToMany(targetEntity: ObsProfile::class, mappedBy: 'company', orphanRemoval: true)]
     private Collection $obsProfiles;
 
+    /**
+     * @var Collection<int, Template360>
+     */
+    #[ORM\OneToMany(targetEntity: Template360::class, mappedBy: 'company')]
+    private Collection $template360s;
+
     public function __construct()
     {
         $this->webUsers = new ArrayCollection();
+        $this->obsProfiles = new ArrayCollection();
+        $this->template360s = new ArrayCollection();
+    }
+
+    public function initObsProfiles(): void
+    {
         $this->obsProfiles = new ArrayCollection([
             new ObsProfile('Observé', false, $this, false, false, true),
             new ObsProfile('Hierarchie', false, $this, true, false, true),
@@ -171,5 +182,35 @@ class Company
     public function __toString(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return Collection<int, Template360>
+     */
+    public function getTemplate360s(): Collection
+    {
+        return $this->template360s;
+    }
+
+    public function addTemplate360(Template360 $template360): static
+    {
+        if (!$this->template360s->contains($template360)) {
+            $this->template360s->add($template360);
+            $template360->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTemplate360(Template360 $template360): static
+    {
+        if ($this->template360s->removeElement($template360)) {
+            // set the owning side to null (unless already changed)
+            if ($template360->getCompany() === $this) {
+                $template360->setCompany(null);
+            }
+        }
+
+        return $this;
     }
 }

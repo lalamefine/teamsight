@@ -2,28 +2,24 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\CompanyConfig;
+use App\Entity\Template360;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 
-class CompanyConfigCrudController extends AbstractCrudController
+class Template360CrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
-        return CompanyConfig::class;
-    }
-
-    public function configureCrud(Crud $crud): Crud
-    {
-        return parent::configureCrud($crud)
-            ->setPaginatorUseOutputWalkers(true);
+        return Template360::class;
     }
 
     public function configureFields(string $pageName): iterable
     {
         return [
             ...parent::configureFields($pageName),
+            ArrayField::new('responses')
+                ->setRequired(true),
             AssociationField::new('company')
                 ->setRequired(false)
                 ->setFormTypeOption('by_reference', true),
