@@ -38,8 +38,8 @@ class Question360
     #[ORM\OneToOne(targetEntity: self::class, cascade: ['persist', 'remove'])]
     private ?self $parentQuestion = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $thematique = null;
+    #[ORM\ManyToOne(inversedBy: 'question360s')]
+    private ?QuestionTheme $thematique = null;
 
     public function __construct()
     {
@@ -141,15 +141,16 @@ class Question360
         return $this;
     }
 
-    public function getThematique(): ?string
+    public function getThematique(): ?QuestionTheme
     {
         return $this->thematique;
     }
 
-    public function setThematique(?string $thematique): static
+    public function setThematique(?QuestionTheme $thematique): static
     {
         $this->thematique = $thematique;
 
         return $this;
     }
+
 }

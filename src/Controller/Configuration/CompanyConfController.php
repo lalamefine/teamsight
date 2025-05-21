@@ -25,22 +25,16 @@ final class CompanyConfController extends AbstractController
     public function index(Request $request, EntityManagerInterface $em, #[CurrentUser] ?WebUser $user = null): Response
     {
         // Récupérer la company active pour l'utilisateur courant
-        $company = $user ? $user->getCompany() : null;
-        
-        if (!$company) {
-            throw $this->createNotFoundException('Aucune entreprise associée à l\'utillisateur actif');
-        }
+        $company = $user?->getCompany() ?? throw $this->createNotFoundException('Aucune entreprise associée à l\'utillisateur actif');
         
         // Initialisation de la configuration par défaut si elle n'existe pas
-        if (!$company->getConfig()) {
+        $companyConfig = $company->getConfig()??(function () use ($em, $company) {
             $cc = new CompanyConfig();
-            $company->setConfig($cc);
-            $em->persist($cc);            
+            $cc->setCompany($company);
+            $em->persist($cc);
             $em->flush();
-        }
-        
-        $companyConfig = $company->getConfig();
-        $confSaved = false;
+            return $cc;
+        })();
         
         // Traitement du formulaire si POST
         if ($request->isMethod('POST')) {
@@ -70,14 +64,12 @@ final class CompanyConfController extends AbstractController
             $companyConfig->setDataRetention((int)($formData['DataRetention'] ?? 36));
             
             $em->flush();
-            $confSaved = true;
             $this->addFlash('success', 'Configuration enregistrée avec succès.');
         }
         
         return $this->render('configuration/confCompany/index.html.twig', [
             'company' => $company,
-            'companyConfig' => $companyConfig,
-            'confSaved' => $confSaved
+            'companyConfig' => $companyConfig
         ]);
     }
     
@@ -119,4 +111,38 @@ final class CompanyConfController extends AbstractController
             $profile->setAnonymous($isAnonymous);
         }
     }
+
+    #[Route('/cf/company-campaigns', name: 'app_conf_company_campaigns')]
+    public function companyConfCamp(Request $request, EntityManagerInterface $em, #[CurrentUser] ?WebUser $user = null): Response
+    {
+        // Récupérer la company active pour l'utilisateur courant
+        $company = $user?->getCompany() ?? throw $this->createNotFoundException('Aucune entreprise associée à l\'utillisateur actif');
+
+        // Initialisation de la configuration par défaut si elle n'existe pas
+        $companyConfig = $company->getConfig()??(function () use ($em, $company) {
+            $cc = new CompanyConfig();
+            $cc->setCompany($company);
+            $em->persist($cc);
+            $em->flush();
+            return $cc;
+        })();
+
+        // Traitement du formulaire si POST
+        if ($request->isMethod('POST')) {
+            // Récupération des données du formulaire
+            $formData = $request->request->all();
+           
+            $companyConfig->setUseAccountDynCamp(isset($formData['UseAccountDynCamp']));
+            $companyConfig->setUseAccountDynPan(isset($formData['UseAccountDynPan']));
+            $em->flush();
+            $this->addFlash('success', 'Configuration enregistrée avec succès.');
+        }
+
+        return $this->render('configuration/confCompany/campaign.html.twig', [ 
+            'company' => $company,
+            'companyConfig' => $companyConfig,
+        ]);
+    }
+
+
 }

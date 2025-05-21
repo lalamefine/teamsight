@@ -46,11 +46,18 @@ class Company
     #[ORM\OneToMany(targetEntity: Template360::class, mappedBy: 'company')]
     private Collection $template360s;
 
+    /**
+     * @var Collection<int, QuestionTheme>
+     */
+    #[ORM\OneToMany(targetEntity: QuestionTheme::class, mappedBy: 'company', orphanRemoval: true)]
+    private Collection $questionThemes;
+
     public function __construct()
     {
         $this->webUsers = new ArrayCollection();
         $this->obsProfiles = new ArrayCollection();
         $this->template360s = new ArrayCollection();
+        $this->questionThemes = new ArrayCollection();
     }
 
     public function initObsProfiles(): void
@@ -208,6 +215,36 @@ class Company
             // set the owning side to null (unless already changed)
             if ($template360->getCompany() === $this) {
                 $template360->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, QuestionTheme>
+     */
+    public function getQuestionThemes(): Collection
+    {
+        return $this->questionThemes;
+    }
+
+    public function addQuestionTheme(QuestionTheme $questionTheme): static
+    {
+        if (!$this->questionThemes->contains($questionTheme)) {
+            $this->questionThemes->add($questionTheme);
+            $questionTheme->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuestionTheme(QuestionTheme $questionTheme): static
+    {
+        if ($this->questionThemes->removeElement($questionTheme)) {
+            // set the owning side to null (unless already changed)
+            if ($questionTheme->getCompany() === $this) {
+                $questionTheme->setCompany(null);
             }
         }
 

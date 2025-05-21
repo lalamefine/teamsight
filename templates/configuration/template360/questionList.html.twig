@@ -1,14 +1,28 @@
-{% for question in questions %}
-<div class="d-flex align-items-center mb-2">
-    <span class="question-number text-muted px-2">
-        {{ loop.index }} - 
-    </span>
-    <span>{{ question.libelle }}</span>
-    <button hx-get="{{ path('app_conf_templates_360_question', { template: template.id, question360: question.id }) }}" 
-        hx-target="#question-edit-modal" hx-trigger="click" data-bs-toggle="modal"
-        data-bs-target="#question-edit-modal"
-        class="btn btn-sm btn-outline-primary border-0 btn-sm mx-3">
-        <i class="bi bi-pencil"></i>
-    </button>
-</div>   
+{% set lastThematique = null %}
+{% for question in questions|sort((a,b) => - (a.thematique.id ?? 0) <=> (b.thematique.id ?? 0)) %}
+    {% if template.useQuestionTheme and  question.thematique != lastThematique %}
+        <h6 class="mt-2">{{ question.thematique }}</h6>
+        {% set lastThematique = question.thematique %}
+    {% endif %}
+    <div class="d-flex align-items-center mb-2 pe-4">
+        <div class="col-auto">
+            <span class="question-number text-muted px-2">
+                {{ loop.index }} - 
+            </span>
+        </div>
+        <div class="col border-bottom">{{ question.libelle }}
+        </div>
+        <div class="col-auto d-flex align-items-center">
+            <button hx-get="{{ path('app_conf_templates_360_question', { template: template.id, question360: question.id }) }}" 
+                hx-target="#question-edit-modal" hx-trigger="click" data-bs-toggle="modal"
+                data-bs-target="#question-edit-modal"
+                class="btn btn-sm btn-outline-primary border-0 btn-sm mx-3">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <div title="{{ question.profiles.map(p => p.name)|join(', ') }}">
+                {{question.profiles|length}}
+                <i class="bi bi-person-fill"></i>
+            </div>
+        </div>
+    </div>   
 {% endfor %}

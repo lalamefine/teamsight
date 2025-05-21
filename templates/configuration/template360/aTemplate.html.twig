@@ -1,133 +1,148 @@
-<form class="w-100 d-flex flex-column gap-2" method="POST">
-    <h6>Template</h6>
-    <input type="hidden" name="company_id" value="{{company.id}}" />
-    <input type="hidden" name="template_id" value="{{template ? template.id}}" />
-    
-    <div class="float-none w-auto px-2 fs-6">Nom du template</div>
-    <input id="t-name" type="text" name="name" class="form-control" 
-        value="{{ template ? template.name : '' }}" />
+<form class="w-100" method="POST">
+    <div class="bg-light p-2 mb-3 rounded d-flex flex-column gap-2">
+        <h5 class="text-center">Configuration du Template</h5>
+        <input type="hidden" name="template_id" value="{{template ? template.id}}" />
+        
+        <div class="float-none w-auto px-2 fs-6">Nom du template</div>
+        <input id="t-name" type="text" name="name" class="form-control" 
+            value="{{ template ? template.name : '' }}" />
 
-    <div class="float-none w-auto px-2 fs-6">Texte d'introduction</div>
-    <textarea id="t-description" name="description" class="form-control" 
-        style="height: 6rem;">{{ template ? template.description : '' }}</textarea>
+        <div class="float-none w-auto px-2 fs-6">Texte d'introduction</div>
+        <textarea id="t-description" name="description" class="form-control" 
+            style="height: 6rem;">{{ template ? template.description : '' }}</textarea>
 
-    <div class="float-none w-auto px-2 fs-6">Echelle de réponse : <button type="button" class="btn btn-outline-primary btn-sm border-0 ms-2 px-3" 
-            data-bs-toggle="modal" data-bs-target="#modalPickDefAnswers">
-            <i class="bi bi-pencil"></i>
-            Modifier les réponses
-        </button></div>
-    <div id="default-answers-preview" class="d-flex align-items-center gap-2 px-2 py-1 border rounded-2 bg-white">
+        <div>
+            <div class="float-none w-auto px-2 fs-6">Echelle de réponse : <button type="button" class="btn btn-outline-primary btn-sm border-0 ms-2 px-3" 
+                    data-bs-toggle="modal" data-bs-target="#modalPickDefAnswers">
+                    <i class="bi bi-pencil"></i>
+                    Modifier les réponses
+                </button></div>
+            <div id="default-answers-preview" class="d-flex align-items-center gap-2 px-2 py-1 border rounded-2 bg-white">
 
-    </div>
-    
-    <!-- Modal -->
-    <div class="modal fade" id="modalPickDefAnswers" tabindex="-1" 
-        aria-labelledby="modalPickDefAnswersLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div id="defaut-answers">
-                    </div>
-                    <div class="mt-3 d-flex justify-content-between">
-                        <button id="add-default-response" type="button" class="btn btn-outline-secondary btn-sm px-3 py-1">
-                            <i class="bi bi-plus"></i>
-                            Ajouter
-                        </button>
-                        <button type="button" class="btn btn-outline-primary btn-sm px-3 py-1"
-                            data-bs-dismiss="modal">
-                            <i class="bi bi-check"></i>
-                            OK
-                        </button>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modalPickDefAnswers" tabindex="-1" 
+                aria-labelledby="modalPickDefAnswersLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div id="defaut-answers">
+                            </div>
+                            <div class="mt-3 d-flex justify-content-between">
+                                <button id="add-default-response" type="button" class="btn btn-outline-secondary btn-sm px-3 py-1">
+                                    <i class="bi bi-plus"></i>
+                                    Ajouter
+                                </button>
+                                <button type="button" class="btn btn-outline-primary btn-sm px-3 py-1"
+                                    data-bs-dismiss="modal">
+                                    <i class="bi bi-check"></i>
+                                    OK
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+            
+            <script>
+                function updatePreview(previewSelector) {
+                    let autoconcatIn = $(this).attr('autoconcat-in');
+                    let target = $(previewSelector);
+                    let text = ""
+                    $("input[autoconcat-in='"+previewSelector+"']").each(function() {
+                        if ($(this).val() != "") {
+                            text += `<span class="mx-1 small">` + $(this).val() + `</span>\n`;
+                        }
+                    }); 
+                    target.html(text);
+                }
+                
+                $(function() {
+                    $(document).on('input', 'input[autoconcat-in]', function() {
+                        updatePreview($(this).attr('autoconcat-in'));
+                    });
+                });
+                
+                function addAnswer(onDiv, autoconcatIn, value = ""){
+                    let autoconcatxt = "";
+                    if (autoconcatIn){
+                        autoconcatxt = 'autoconcat-in="' + autoconcatIn + '"';
+                    }
+                    let newAnsDiv = $(`<div class="answer-item input-group mt-1">
+                        <input type="text" name="responses[]" value="` + value + `" ` + autoconcatxt + ` class="flex-grow-1 form-control form-control-sm" placeholder="Libellé" />
+                        <input type="text" value="" disabled class="updatedValue100p form-control form-control-sm" style="width: 4rem;" />
+                        <button class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-dash"></i>
+                        </button>
+                    </div>`);
+                    onDiv.append(newAnsDiv);
+                }
+
+                function updateDisplayedValues() {
+                    let nbVal = $(".updatedValue100p").length -1
+                    let val = 0;
+                    if (nbVal > 0) {
+                        $(".updatedValue100p").each(function() {
+                            $(this).val(Math.round(10000 * val / nbVal)/100 + "%");
+                            val += 1
+                        });
+                    } else {
+                        $(".updatedValue100p").val("-");
+                    }
+                }
+
+                $(function() {
+                    let defAns = $('#defaut-answers')
+                    $('#add-default-response').click(function() {
+                        addAnswer(defAns, "#default-answers-preview");
+                        updateDisplayedValues();
+                    });
+
+                    defAns.on('click', '.btn-outline-danger', function() {
+                        let answerDiv = $(this).closest('.answer-item')
+                        let associatedPreview = answerDiv.find('[autoconcat-in]').attr('autoconcat-in');
+                        answerDiv.remove();
+                        if (associatedPreview) {
+                            updatePreview(associatedPreview);
+                            updateDisplayedValues();
+                        }
+                    });
+                });
+
+                function addAnswerPrefilled(value = ""){
+                    addAnswer($('#defaut-answers'), "#default-answers-preview", value);
+                    updatePreview("#default-answers-preview")
+                }
+                
+                // Initialiser les modals Bootstrap
+                $(document).ready(function() {
+                    var myModal = new bootstrap.Modal(document.getElementById('modalPickDefAnswers'));
+                    let ans = JSON.parse(`{{ (template ? template.responses : [])|json_encode|raw }}`);
+                    for (let i = 0; i < ans.length; i++) {
+                        addAnswerPrefilled(ans[i]);
+                    }
+                    updatePreview("#default-answers-preview");
+                    updateDisplayedValues();
+                });
+            </script>
         </div>
+
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="useQuestionTheme" name="useQuestionTheme" 
+                {% if not template is null and template.useQuestionTheme %}checked{% endif %}>
+            <label class="form-check-label" for="useQuestionTheme">
+                Regrouper les questions par thématique
+            </label>
+        </div>
+        <button type="submit" class="btn btn-outline-primary btn-sm px-3 mt-2">
+            <i class="bi bi-check"></i>
+            Enregistrer
+        </button>
     </div>
-    
-    <script>
-    function updatePreview(previewSelector) {
-        let autoconcatIn = $(this).attr('autoconcat-in');
-        let target = $(previewSelector);
-        let text = ""
-        $("input[autoconcat-in='"+previewSelector+"']").each(function() {
-            if ($(this).val() != "") {
-                text += `<span class="mx-1 small"><u>` + $(this).val() + `</u></span>\n`;
-            }
-        }); 
-        target.html(text);
-    }
-    
-    $(function() {
-        $(document).on('input', 'input[autoconcat-in]', function() {
-            updatePreview($(this).attr('autoconcat-in'));
-        });
-    });
-    
-    function addAnswer(onDiv, autoconcatIn, value = ""){
-        let autoconcatxt = "";
-        if (autoconcatIn){
-            autoconcatxt = 'autoconcat-in="' + autoconcatIn + '"';
-        }
-        let newAnsDiv = $(`<div class="answer-item input-group mt-1">
-            <input type="text" name="responses[]" value="` + value + `" ` + autoconcatxt + ` class="flex-grow-1 form-control form-control-sm" placeholder="Libellé" />
-            <input type="text" value="" disabled class="updatedValue100p form-control form-control-sm" style="width: 4rem;" />
-            <button class="btn btn-sm btn-outline-danger">
-                <i class="bi bi-dash"></i>
-            </button>
-        </div>`);
-        onDiv.append(newAnsDiv);
-    }
-
-    function updateDisplayedValues() {
-        let nbVal = $(".updatedValue100p").length -1
-        let val = 0;
-        if (nbVal > 0) {
-            $(".updatedValue100p").each(function() {
-                $(this).val(Math.round(10000 * val / nbVal)/100 + "%");
-                val += 1
-            });
-        } else {
-            $(".updatedValue100p").val("-");
-        }
-    }
-
-    $(function() {
-        let defAns = $('#defaut-answers')
-        $('#add-default-response').click(function() {
-            addAnswer(defAns, "#default-answers-preview");
-            updateDisplayedValues();
-        });
-
-        defAns.on('click', '.btn-outline-danger', function() {
-            let answerDiv = $(this).closest('.answer-item')
-            let associatedPreview = answerDiv.find('[autoconcat-in]').attr('autoconcat-in');
-            answerDiv.remove();
-            if (associatedPreview) {
-                updatePreview(associatedPreview);
-                updateDisplayedValues();
-            }
-        });
-    });
-
-    function addAnswerPrefilled(value = ""){
-        addAnswer($('#defaut-answers'), "#default-answers-preview", value);
-        updatePreview("#default-answers-preview")
-    }
-    
-    // Initialiser les modals Bootstrap
-    $(document).ready(function() {
-        var myModal = new bootstrap.Modal(document.getElementById('modalPickDefAnswers'));
-        let ans = JSON.parse(`{{ (template ? template.responses : [])|json_encode|raw }}`);
-        for (let i = 0; i < ans.length; i++) {
-            addAnswerPrefilled(ans[i]);
-        }
-        updatePreview("#default-answers-preview");
-        updateDisplayedValues();
-    });
-    </script>
-
     {% if template %}
-        <h6>Questions</h6>
+    <div class="bg-light p-2 mb-2 rounded d-flex flex-column gap-2">
+        <h5 class="text-center">Questions</h5>
         <div id="template-questions">
             {% include "configuration/template360/questionList.html.twig" with {
                 'questions': template.questions,
@@ -151,9 +166,8 @@
                 <div class="modal-content"></div>
             </div>
         </div>
+    </div>
     {% endif %}
-    <button type="submit" class="btn btn-outline-primary btn-sm px-3 mt-2">
-        <i class="bi bi-check"></i>
-        Enregistrer
-    </button>
 </form>
+<link rel="stylesheet" href="/css/awesomplete.css" />
+<script src="/js/awesomplete.min.js" async></script>

@@ -14,7 +14,10 @@
             {% endif %}
             {% if is_granted('ROLE_ENT_MANAGER') %}
             <li>
-                <a href="{{ path('app_conf_company') }}" hx-boost="false">Configuration Entreprise</a>
+                <a href="{{ path('app_conf_company') }}">Configuration Entreprise</a>
+            </li>
+            <li>
+                <a href="{{ path('app_conf_company_campaigns') }}">Configuration Campagnes</a>
             </li>
             {% endif %}
             {% if is_granted('ROLE_T_360_MAN') %}

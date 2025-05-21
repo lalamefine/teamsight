@@ -3,9 +3,11 @@
 namespace App\Controller\Configuration;
 
 use App\Entity\Question360;
+use App\Entity\QuestionTheme;
 use App\Entity\Template360;
 use App\Entity\WebUser;
 use App\Repository\ObsProfileRepository;
+use App\Repository\QuestionThemeRepository;
 use App\Repository\Template360Repository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,6 +38,7 @@ final class Template360Controller extends AbstractController
 
             $selectedTemplate->setName($formData['name']);
             $selectedTemplate->setDescription($formData['description']);
+            $selectedTemplate->setUseQuestionTheme(isset($formData['useQuestionTheme']));
             $selectedTemplate->setCompany($user->getCompany());
             $selectedTemplate->setResponses($formData['responses']);
             $em->persist($selectedTemplate);
@@ -58,7 +61,9 @@ final class Template360Controller extends AbstractController
     }
     
     #[Route('/cf/t360/{template}/question/{question360}', name: 'app_conf_templates_360_question', defaults: ['question360' => null])]
-    public function question(Request $request, Template360 $template, ?Question360 $question360, EntityManagerInterface $em, ObsProfileRepository $obsProfileRepository): Response
+    public function question(
+        Request $request, Template360 $template, ?Question360 $question360, 
+        EntityManagerInterface $em, ObsProfileRepository $obsProfileRepository, QuestionThemeRepository $questionThemeRepository): Response
     {
         if ($request->getMethod() === 'POST') {
             if (!$question360) {
@@ -67,6 +72,23 @@ final class Template360Controller extends AbstractController
             $form = $request->request->all();
             // dd($form);
             $question360->setLibelle($form['libelle']);
+
+            if (isset($form['thematique'])) {
+                $theme = $questionThemeRepository->findBy([
+                    'company' => $template->getCompany(),
+                    'name' => $form['thematique']
+                ]);
+                if ($theme) {
+                    $question360->setThematique($theme[0]);
+                } else {
+                    $newTheme = new QuestionTheme();
+                    $newTheme->setName($form['thematique']);
+                    $newTheme->setCompany($template->getCompany());
+                    $em->persist($newTheme);
+                    $em->flush();
+                    $question360->setThematique($newTheme);
+                }
+            }
             // $question360->setVerbatim($form['verbatim'] === 'true');
             // $question360->setCustomResponses($form['customResponses']);
             $profiles = $form['profiles'];

@@ -5,8 +5,7 @@
 
 {% block body %}
     <div class="d-flex flex-column align-items-center mt-3">
-        <div class="container px-4 py-2 w-100 col-lg-10 d-flex flex-row position-relative">
-            {# Remplacé le commentaire @SideMenu() #}
+        <div class="container px-4 py-2">
             <form method="post" id="conf-form" 
                 class="bg-white shadow p-4 rounded w-100" hx-swap="show:top">
                 
@@ -221,7 +220,7 @@
                 <div class="mb-3">
                     <input type="checkbox" {% if companyConfig.isUseTeamGrouping %}checked="checked"{% endif %} 
                         class="form-check-input" id="eq-grp" name="UseAgtEquipe"/>
-                    <label class="ms-2" for="eq-grp">Regrouper les utilisateurs en équipes</label>
+                    <label class="ms-2" for="eq-grp">Identifier les équipes</label>
                     <div class="small text-muted ms-4">
                         Ajoute un champ de selection d'équipe pour chaque utillisateur
                     </div>
@@ -244,24 +243,7 @@
                         Les données nominatives (feedback, compétences, évaluation) seront supprimées après le délai indiqué.
                     </div>
                 </div>
-                <div class="mb-3">
-                    <input type="checkbox" {% if companyConfig.isUseAccountDynCamp %}checked="checked"{% endif %} 
-                        class="form-check-input" id="dyn-camp" name="UseAccountDynCamp"/>
-                    <label class="ms-2" for="dyn-camp">Autoriser l'ajout manuel durant la création des campagne</label>
-                    <div class="small text-muted ms-4">
-                        Propose une page d'ajout manuel aux superviseur de campagne
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <input type="checkbox" {% if companyConfig.isUseAccountDynPan %}checked="checked"{% endif %} 
-                        class="form-check-input" id="dyn-pan" name="UseAccountDynPan"/>
-                    <label class="ms-2" for="dyn-pan">Autoriser l'ajout manuel durant la constitution des panels</label>
-                    <div class="small text-muted ms-4">
-                        Propose une page d'ajout manuel aux salariés constituants les panels d'observation
-                    </div>
-                </div>
-
-                <button id="submit" type="submit" class="btn btn-primary mt-4">Sauvegarder les modifications</button>
+                <button id="submit" type="submit" class="btn btn-primary mt-1">Sauvegarder les modifications</button>
             </form>
         </div>
     </div>

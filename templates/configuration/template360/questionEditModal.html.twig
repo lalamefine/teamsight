@@ -9,10 +9,12 @@
                 <label for="question-libelle" class="form-label">Libellé de la question</label>
                 <input type="text" class="form-control" id="question-libelle" name="libelle" value="{{ question ? question.libelle }}" required>
             </div>
-            <div class="mb-3">
-                <label for="question-libelle" class="form-label">Thématique associée (optionnel):</label>
-                <input type="text" class="form-control" id="question-libelle" name="thematique" value="{{ question ? question.thematique }}">
-            </div>
+            {% if template.useQuestionTheme %}
+                <div class="mb-3">
+                    <label for="question-libelle" class="form-label">Thématique associée :</label><br/>
+                    <input type="text" class="awesomplete form-control " id="question-thematique" name="thematique" value="{{ question ? question.thematique }}">
+                </div>
+            {% endif %}
             <div class="mb-3">
                 <label for="affectedProfiles" class="form-label">Question présentée aux profils : </label>
                 <div class="row m-0">
@@ -34,3 +36,12 @@
         </div>
     </div>
 </form>
+<script>
+    // Initialiser les modals Bootstrap
+    $(document).ready(function() {
+        var input = document.getElementById("question-thematique");
+        var thematiques = JSON.parse(`{{ (template ? template.company.questionThemes|map(q => q.name)  : [])|json_encode|raw }}`);
+        
+        new Awesomplete(input, {list: thematiques, minChars: 0});
+    });
+</script>

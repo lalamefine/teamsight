@@ -49,6 +49,10 @@ class Template360
     #[ORM\OneToMany(targetEntity: Question360::class, mappedBy: 'template', orphanRemoval: true)]
     private Collection $questions;
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $useQuestionTheme = false;
+
+    // ======= generated ========
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -195,6 +199,18 @@ class Template360
                 $question->setTemplate(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isUseQuestionTheme(): ?bool
+    {
+        return $this->useQuestionTheme;
+    }
+
+    public function setUseQuestionTheme(bool $useQuestionTheme): static
+    {
+        $this->useQuestionTheme = $useQuestionTheme;
 
         return $this;
     }
