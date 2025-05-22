@@ -7,7 +7,7 @@
         <div class="container px-4 py-2">
             <form method="post" id="conf-form" 
                 class="bg-white shadow p-4 rounded w-100" hx-swap="show:top">
-                <h5>Configuration du déroulé des campagnes</h5>         
+                <h5>Configuration du déroulé des campagnes</h5>
                 <div class="mb-3">
                     <input type="checkbox" {% if companyConfig.isUseAccountDynCamp %}checked="checked"{% endif %} 
                         class="form-check-input" id="dyn-camp" name="UseAccountDynCamp"/>
@@ -16,15 +16,16 @@
                         Propose une page d'ajout manuel aux superviseur de campagne
                     </div>
                 </div>
-                <div class="mb-3">
-                    <input type="checkbox" {% if companyConfig.isUseAccountDynPan %}checked="checked"{% endif %} 
-                        class="form-check-input" id="dyn-pan" name="UseAccountDynPan"/>
-                    <label class="ms-2" for="dyn-pan">Autoriser l'ajout manuel durant la constitution des panels</label>
-                    <div class="small text-muted ms-4">
-                        Propose une page d'ajout manuel d'utillisateurs constituants les panels d'observation
+                {% if companyConfig.questFdb360 %}
+                    <div class="mb-3">
+                        <input type="checkbox" {% if companyConfig.isUseAccountDynPan %}checked="checked"{% endif %} 
+                            class="form-check-input" id="dyn-pan" name="UseAccountDynPan"/>
+                        <label class="ms-2" for="dyn-pan">Autoriser l'ajout manuel durant la constitution des panels de FeedBack360</label>
+                        <div class="small text-muted ms-4">
+                            Propose une page d'ajout manuel d'utillisateurs constituants les panels d'observation
+                        </div>
                     </div>
-                </div>
-
+                {% endif %}
                 <button id="submit" type="submit" class="btn btn-primary mt-1">Sauvegarder les modifications</button>
             </form>
         </div>

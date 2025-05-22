@@ -117,7 +117,6 @@ class CompanyConfig
     public function setAccountSystem(string $accountSystem): static
     {
         $this->accountSystem = $accountSystem;
-
         return $this;
     }
 

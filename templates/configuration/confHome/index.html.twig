@@ -7,17 +7,22 @@
     <div class="bg-white shadow p-4 rounded w-100" >
         <h1>Configuration</h1>
         <ul>
-            {% if is_granted('ROLE_ADMIN') %}
+            {% if is_granted('ROLE_SUPER_ADMIN') %}
             <li>
                 <a href="{{ path('admin') }}" hx-boost="false">Dashboard super-administrateur</a>
             </li>
             {% endif %}
-            {% if is_granted('ROLE_ENT_MANAGER') %}
+            {% if is_granted('ROLE_ENT_ADMIN') %}
             <li>
-                <a href="{{ path('app_conf_company') }}">Configuration Entreprise</a>
+                <a href="{{ path('app_conf_company') }}">Configuration Plateforme</a>
             </li>
             <li>
                 <a href="{{ path('app_conf_company_campaigns') }}">Configuration Campagnes</a>
+            </li>
+            {% endif %}
+            {% if is_granted('ROLE_ENT_USER_MANAGER') %}
+            <li>
+                <a href="{{ path('app_gestion_company_users') }}">Gestion Utillisateurs</a>
             </li>
             {% endif %}
             {% if is_granted('ROLE_T_360_MAN') %}

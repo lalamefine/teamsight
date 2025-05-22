@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
+use App\Abstraction\CompanyUserInterface;
 use App\Repository\WebUserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: WebUserRepository::class)]
-class WebUser implements UserInterface, PasswordAuthenticatedUserInterface
+class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
