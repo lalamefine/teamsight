@@ -22,8 +22,7 @@ security:
                 enable_csrf: true
             logout:
                 path: app_logout
-                # where to redirect after logout
-                # target: app_any_route
+                target: app_landing
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -35,18 +34,19 @@ security:
     # Note: Only the *first* access control that matches will be used
 
     access_control:
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_SUPER_ADMIN }
-        - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/*, roles: ROLE_USER }
 
     role_hierarchy:
         ROLE_SUPER_ADMIN: ROLE_ENT_ADMIN
-        ROLE_ENT_ADMIN: [ROLE_T_ENSURV_MAN, ROLE_T_REFCOM_MAN, ROLE_T_EA_MAN, ROLE_T_360_MAN, ROLE_CAMP_MAKR, ROLE_ENT_USER_MANAGER]
+        ROLE_ENT_ADMIN: [ROLE_T_ENSURV_MAN, ROLE_T_REFCOM_MAN, ROLE_T_EA_MAN, ROLE_T_360_MAN, ROLE_ENT_USER_MANAGER]
         ROLE_ENT_USER_MANAGER: ROLE_USER
         ROLE_T_ENSURV_MAN: ROLE_USER
         ROLE_T_REFCOM_MAN: ROLE_USER
         ROLE_T_EA_MAN: ROLE_USER
         ROLE_T_360_MAN: ROLE_USER
-        ROLE_CAMP_MAKR: ROLE_USER
 
 when@test:
     security:

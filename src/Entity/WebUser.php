@@ -16,26 +16,23 @@ class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterfac
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 128)]
-    private ?string $username = null;
-
     #[ORM\Column(length: 255)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $hpass = null;
 
-    #[ORM\Column(type: Types::SIMPLE_ARRAY)]
-    private array $roles = [];
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
+    private ?array $roles = [];
 
     #[ORM\Column]
-    private ?bool $canConnect = null;
+    private bool $canConnect = true;
 
     #[ORM\Column]
-    private ?bool $displayed = null;
+    private bool $displayed = true;
 
     #[ORM\Column]
-    private ?bool $emailValidated = null;
+    private bool $emailValidated = false;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $companyInternalID = null;
@@ -43,9 +40,15 @@ class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterfac
     #[ORM\ManyToOne(inversedBy: 'webUsers')]
     private ?Company $company = null;
 
+    #[ORM\Column(length: 64)]
+    private string $firstName;
+
+    #[ORM\Column(length: 64)]
+    private string $lastName;
+
     public function getUserIdentifier(): string
     {
-        return (string) $this->username;
+        return (string) $this->getUsername();
     }
 
     public function eraseCredentials(): void
@@ -61,14 +64,7 @@ class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterfac
 
     public function getUsername(): ?string
     {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): static
-    {
-        $this->username = $username;
-
-        return $this;
+        return $this->firstName . ' ' . $this->lastName;
     }
 
     public function getEmail(): ?string
@@ -171,6 +167,30 @@ class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterfac
     public function setCompany(?Company $company): static
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(?string $firstName): static
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): static
+    {
+        $this->lastName = $lastName;
 
         return $this;
     }

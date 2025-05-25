@@ -208,29 +208,20 @@
                         <option value="OIDC" disabled>Open ID Connect (à venir)</option>
                     </select>
                 </div>
-                <div class="ps-3 d-flex mb-3">
-                    <div class="float-none col-4 px-2 fs-6">Système de gestion des comptes utillisateur</div>
-                    <select class="form-select" name="AccountSystem">
-                        <option value="WebUI" {% if companyConfig.accountSystem == 'WebUI' %}selected{% endif %}>Gestion via l'interface web</option>
-                        <option value="CSV" {% if companyConfig.accountSystem == 'CSV' %}selected{% endif %}>Import manuel csv UTF8</option>
-                        <option value="Webhook" disabled>Webhook csv UTF8 (à venir)</option>
-                        <option value="API" disabled>Via une API (à venir)</option>
-                    </select>
-                </div>
-                <div class="mb-3">
+                {# <div class="mb-3">
                     <input type="checkbox" {% if companyConfig.isUseTeamGrouping %}checked="checked"{% endif %} 
                         class="form-check-input" id="eq-grp" name="UseAgtEquipe"/>
                     <label class="ms-2" for="eq-grp">Identifier les équipes</label>
                     <div class="small text-muted ms-4">
-                        Ajoute un champ de selection d'équipe pour chaque utillisateur
+                        Ajoute un champ de selection d'équipe pour chaque utilisateur
                     </div>
-                </div>
+                </div> #}
                 <div class="mb-3">
                     <input type="checkbox" {% if companyConfig.isUseCompRef %}checked="checked"{% endif %} 
                         class="form-check-input" id="with-metier" name="UseCompRef"/>
                     <label class="ms-2" for="with-metier">Utilliser un référentiel de compétence par métier</label>
                     <div class="small text-muted ms-4">
-                        Ajoute un champ "métier" pour chaque utillisateur, permet d'associer des compétences prédéfinies à chaque métier
+                        Ajoute un champ "métier" pour chaque utilisateur, permet d'associer des compétences prédéfinies à chaque métier
                     </div>
                 </div>
                 <div class="mb-3">

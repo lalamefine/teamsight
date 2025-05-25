@@ -1,31 +1,55 @@
-<table>
+<table class="table table-hover">
     <thead>
         <tr>
-            <th>Nom</th>
+            {% if app.user.company.config.agtIdType in ['company', 'app'] %}
+                <th>Identifiant</th>
+            {% endif %}
             <th>Email</th>
-            <th>Rôle</th>
+            <th>Nom</th>
+            <th>Rôles</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         {% for user in users %}
             <tr>
-                <td>{{ user.name }}</td>
+                {% if app.user.company.config.agtIdType == 'company' %}
+                    <td>{{ user.companyInternalID }}</td>
+                {% elseif app.user.company.config.agtIdType == 'app' %}
+                    <td>{{ user.id }}</td>
+                {% endif %}
                 <td>{{ user.email }}</td>
-                <td>{{ user.role }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.roles|join(', ') }}</td>
                 <td>
-                    <button hx-get="{{ path('app_gestion_company_users_edit', { userid: user.id }) }}" 
-                        hx-target="#user-edit-modal" hx-trigger="click" data-bs-toggle="modal"
-                        data-bs-target="#user-edit-modal"
-                        class="btn btn-sm btn-outline-primary border-0 btn-sm mx-3">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button type="button"
-                        class="btn btn-sm btn-outline-primary border-0 btn-sm mx-3">
-                        <i class="bi bi-trash"></i>
-                    </button>
+                    <div class="d-flex justify-content-end">
+                        <button hx-get="{{ path('app_gestion_company_users_edit', { userid: user.id }) }}" 
+                            hx-target="#user-edit-modal" hx-trigger="click" data-bs-toggle="modal"
+                            data-bs-target="#user-edit-modal"
+                            class="btn btn-sm btn-outline-primary border-0 btn-sm mx-1">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button type="button" hx-get="{{ path('app_gestion_company_users_delete', { targetuser: user.id }) }}" 
+                            hx-target="#user-edit-modal" hx-trigger="click" data-bs-toggle="modal"
+                            data-bs-target="#user-edit-modal"
+                            class="btn btn-sm btn-outline-danger border-0 btn-sm mx-1">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
+{% if lastpage > 1 %}
+    <form hx-get="{{ path('app_gestion_company_users_list') }}" hx-target="#user-list">
+        <input type="hidden" name="search" value="{{ search ?? '' }}">
+        <div class="d-flex justify-content-center">
+            <div class="btn-group me-2 col-auto" role="group">
+                {% for page in 1..lastpage %}
+                    <button name="p" value="{{ page }}" class="col-auto btn btn-sm {% if page == currentpage %} btn-primary disabled {% else %} btn-outline-primary{% endif %}">{{ page }}</button>
+                {% endfor %}
+            </div>
+        </div>
+    </form> 
+{% endif %}

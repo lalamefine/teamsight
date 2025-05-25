@@ -1,0 +1,23 @@
+<div class="modal-dialog modal-lg modal-dialog-centered">    
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                {% if targetuser.id is not null %}
+                    Modifier l'utilisateur {{ targetuser.username }}
+                {% endif %}
+            </h5>
+        </div>
+        <div class="modal-body">
+            <form method="POST" action="{{ path('app_gestion_company_users_delete', {'targetuser': targetuser.id}) }}">
+                <p>Êtes-vous sûr de vouloir supprimer l'utilisateur {{ targetuser.username }} ?</p>
+                <span class="text-muted">
+                    Ses réponses resteront enregistrées mais il ne pourra plus se connecter à l'application et il sera retiré des effectifs associés à votre entreprise.
+                </span>
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ targetuser.id) }}">
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-danger" name="confirm" value="yes">Supprimer</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                </div>
+        </div>
+    </div>
+</div>

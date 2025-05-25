@@ -1,29 +1,36 @@
 
-<form>
-    <input type="text" class="form-control" id="search" name="search" placeholder="Rechercher un utilisateur">
+<form hx-get="{{ path('app_gestion_company_users_list') }}" hx-target="#user-list">
+    <div class="input-group">
+        <input type="text" class="form-control" name="search" placeholder="Rechercher un utilisateur">
+        <button type="button" class="btn btn-outline-secondary" id="search-button">
+            <i class="bi bi-search"></i> Rechercher
+        </button>
+    </div>
 </form>
 
-<div id="user-list" class="mt-3">
-    {% include "configuration/companyUsers/webui/list.html.twig" with {
-        users: []
-    } %}
+<div id="user-list" class="mt-3" hx-get="{{ path('app_gestion_company_users_list') }}" hx-target="#user-list" hx-trigger="load">
+    <div class="text-center m-5">
+        <span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span>
+    </div>
 </div>
 
-<div>
+<div class="mt-2">
     <button hx-get="{{ path('app_gestion_company_users_edit', { userid: 'new' }) }}" 
         hx-target="#user-edit-modal" hx-trigger="click" data-bs-toggle="modal"
         data-bs-target="#user-edit-modal"
-        class="btn btn-sm btn-primary btn-sm mx-3">
+        class="btn btn-primary btn-sm mx-3">
         <i class="bi bi-plus"></i> Ajouter un utilisateur
     </button>
-</div>
 
-<div id="user-edit-modal"
-    class="modal modal-blur fade"
-    style="display: none"
-    aria-hidden="false"
-    tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content"></div>
+    <div id="user-edit-modal"
+        class="modal modal-blur fade"
+        style="display: none"
+        aria-hidden="false"
+        tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content d-flex justify-content-center align-items-center">
+                <span class="spinner-border spinner-border-lg m-5" role="status" aria-hidden="true"></span>
+            </div>
+        </div>
     </div>
 </div>

@@ -25,7 +25,7 @@ final class CompanyConfController extends AbstractController
     public function index(Request $request, EntityManagerInterface $em, #[CurrentUser] ?WebUser $user = null): Response
     {
         // Récupérer la company active pour l'utilisateur courant
-        $company = $user?->getCompany() ?? throw $this->createNotFoundException('Aucune entreprise associée à l\'utillisateur actif');
+        $company = $user?->getCompany() ?? throw $this->createNotFoundException('Aucune entreprise associée à l\'utilisateur actif');
         
         // Initialisation de la configuration par défaut si elle n'existe pas
         $companyConfig = $company->getConfig()??(function () use ($em, $company) {
@@ -54,9 +54,8 @@ final class CompanyConfController extends AbstractController
             
             $companyConfig->setAgtIdType($formData['AgtIdType'] ?? 'email');
             $companyConfig->setAgtAuthType($formData['AgtAuthType'] ?? 'email-pass');
-            $companyConfig->setAccountSystem($formData['AccountSystem'] ?? 'WebUI');
             
-            $companyConfig->setUseTeamGrouping(isset($formData['UseAgtEquipe']));
+            // $companyConfig->setUseTeamGrouping(isset($formData['UseAgtEquipe']));
             $companyConfig->setUseCompRef(isset($formData['UseCompRef']));
             $companyConfig->setUseAccountDynCamp(isset($formData['UseAccountDynCamp']));
             $companyConfig->setUseAccountDynPan(isset($formData['UseAccountDynPan']));
@@ -116,7 +115,7 @@ final class CompanyConfController extends AbstractController
     public function companyConfCamp(Request $request, EntityManagerInterface $em, #[CurrentUser] ?WebUser $user = null): Response
     {
         // Récupérer la company active pour l'utilisateur courant
-        $company = $user?->getCompany() ?? throw $this->createNotFoundException('Aucune entreprise associée à l\'utillisateur actif');
+        $company = $user?->getCompany() ?? throw $this->createNotFoundException('Aucune entreprise associée à l\'utilisateur actif');
 
         // Initialisation de la configuration par défaut si elle n'existe pas
         $companyConfig = $company->getConfig()??(function () use ($em, $company) {

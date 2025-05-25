@@ -25,9 +25,6 @@ class CompanyConfig
     #[ORM\Column(options: ['default' => true])]
     private bool $useCompRef = true;
 
-    #[ORM\Column(length: 32, options: ['default' => 'WebUI'])]
-    private ?string $accountSystem = 'WebUI';
-
     #[ORM\Column(options: ['default' => true])]
     private bool $questFdb360 = true;
 
@@ -63,6 +60,7 @@ class CompanyConfig
 
     public function getAgtIdType(): ?string
     {
+        // $list = ['email', 'company', 'app'];
         return $this->agtIdType;
     }
 
@@ -75,6 +73,7 @@ class CompanyConfig
 
     public function getAgtAuthType(): ?string
     {
+        // $list = 
         return $this->agtAuthType;
     }
 
@@ -106,17 +105,6 @@ class CompanyConfig
     {
         $this->useCompRef = $useCompRef;
 
-        return $this;
-    }
-
-    public function getAccountSystem(): ?string
-    {
-        return $this->accountSystem;
-    }
-
-    public function setAccountSystem(string $accountSystem): static
-    {
-        $this->accountSystem = $accountSystem;
         return $this;
     }
 

@@ -25,7 +25,7 @@ class UserUserAccessService
         if ($this->security->isGranted('ROLE_SUPER_ADMIN')) {
             return true;
         }
-        if ($this->security->isGranted('ROLE_ENT_USER_MANAGER') || $this->security->isGranted('ROLE_CAMP_MAKR')) {
+        if ($this->security->isGranted('ROLE_ENT_USER_MANAGER')) {
             return $this->currentUser->getCompany()->getId() === $subject->getCompany()->getId();
         }
         return false;

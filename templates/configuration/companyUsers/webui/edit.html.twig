@@ -1,24 +1,16 @@
-<form class="modal-dialog modal-lg modal-dialog-centered" method="POST" 
-    action="{{ path('app_gestion_company_users_edit', { userid: targetuser.id ?? 'new' }) }}">
-    
+<div class="modal-dialog modal-lg modal-dialog-centered">    
     <div class="modal-content">
         <div class="modal-header">
             <h5 class="modal-title">
                 {% if targetuser.id is not null %}
-                    Modifier l'utilisateur {{ targetuser.name }}
+                    Modifier l'utilisateur {{ targetuser.username }}
                 {% else %}
                     Ajouter un utilisateur
                 {% endif %}
             </h5>
         </div>
         <div class="modal-body">
-            <pre>
-                {{ dump(targetuser) }}
-            </pre>
-        </div>
-        <div class="modal-footer">
-            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Enregistrer</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            {{ form(form, {'action': path('app_gestion_company_users_edit', {'userid': targetuser.id ?? 'new' })}) }}
         </div>
     </div>
-</form>
+</div>

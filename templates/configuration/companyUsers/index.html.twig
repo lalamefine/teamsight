@@ -1,12 +1,28 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gestion des utillisateurs de l'entreprise {{app.user.company.name}}{% endblock %}
+{% block title %}Gestion des utilisateurs de l'entreprise {{app.user.company.name}}{% endblock %}
 
 {% block body %}
 <div class="container mt-2">
     <div class="bg-white shadow p-4 rounded w-100">
         <h5>{{ block('title') }}</h5>
-        {% set acSystem = app.user.company.config.accountSystem %}
+        {% set acSystem = app.request.query('tab', 'WebUI') %}
+        <form>
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <button name="tab" value="WebUI" class="nav-link active">WebUI</a>
+                </li>
+                <li class="nav-item">
+                    <button name="tab" value="CSV" class="nav-link">CSV</a>
+                </li>
+                <li class="nav-item">
+                    <button name="tab" value="Webhook" class="nav-link disabled">Webhook</a>
+                </li>
+                <li class="nav-item">
+                    <button name="tab" value="API" class="nav-link disabled">API</a>
+                </li>
+            </ul>
+        </form>
         {% if acSystem == "WebUI" %}
             {% include 'configuration/companyUsers/webui/index.html.twig' %}
         {% elseif acSystem == "CSV" %}
@@ -15,10 +31,6 @@
             {% include 'configuration/companyUsers/webhook.html.twig' %}
         {% elseif acSystem == "API" %}
             {% include 'configuration/companyUsers/api.html.twig' %}
-        {% else %}
-            <div class="alert alert-danger">
-                Erreur de configuration de l'entreprise. Veuillez contacter le support.
-            </div>
         {% endif %}        
     </div>
 </div>
