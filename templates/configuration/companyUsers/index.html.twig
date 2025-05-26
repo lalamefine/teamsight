@@ -4,25 +4,20 @@
 
 {% block body %}
 <div class="container mt-2">
+    <div class="bg-white shadow p-3 rounded w-100 mb-2">
+        <h5 class="m-0">{{ block('title') }}</h5>
+    </div>
+    {% set acSystem = app.request.query.get('tab')??'WebUI' %}
+    <form class="mx-4">
+        <ul class="nav nav-tabs border-0">
+            {% for tab in ['WebUI', 'CSV', 'Webhook', 'API'] %}
+                <li class="nav-item border-0">
+                    <button name="tab" value="{{tab}}" class="nav-link border-0 {{acSystem == tab ?'active'}}">{{tab}}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </form>
     <div class="bg-white shadow p-4 rounded w-100">
-        <h5>{{ block('title') }}</h5>
-        {% set acSystem = app.request.query('tab', 'WebUI') %}
-        <form>
-            <ul class="nav nav-tabs">
-                <li class="nav-item">
-                    <button name="tab" value="WebUI" class="nav-link active">WebUI</a>
-                </li>
-                <li class="nav-item">
-                    <button name="tab" value="CSV" class="nav-link">CSV</a>
-                </li>
-                <li class="nav-item">
-                    <button name="tab" value="Webhook" class="nav-link disabled">Webhook</a>
-                </li>
-                <li class="nav-item">
-                    <button name="tab" value="API" class="nav-link disabled">API</a>
-                </li>
-            </ul>
-        </form>
         {% if acSystem == "WebUI" %}
             {% include 'configuration/companyUsers/webui/index.html.twig' %}
         {% elseif acSystem == "CSV" %}

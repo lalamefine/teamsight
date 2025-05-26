@@ -52,12 +52,19 @@ class Company
     #[ORM\OneToMany(targetEntity: QuestionTheme::class, mappedBy: 'company', orphanRemoval: true)]
     private Collection $questionThemes;
 
+    /**
+     * @var Collection<int, Campaign>
+     */
+    #[ORM\OneToMany(targetEntity: CampaignFeedback360::class, mappedBy: 'company', orphanRemoval: true)]
+    private Collection $campaignFeedback360s;
+
     public function __construct()
     {
         $this->webUsers = new ArrayCollection();
         $this->obsProfiles = new ArrayCollection();
         $this->template360s = new ArrayCollection();
         $this->questionThemes = new ArrayCollection();
+        $this->campaignFeedback360s = new ArrayCollection();
     }
 
     public function initObsProfiles(): void
@@ -245,6 +252,36 @@ class Company
             // set the owning side to null (unless already changed)
             if ($questionTheme->getCompany() === $this) {
                 $questionTheme->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Campaign>
+     */
+    public function getCampaignFeedback360s(): Collection
+    {
+        return $this->campaignFeedback360s;
+    }
+
+    public function addCampaignFeedback360(CampaignFeedback360 $campaignFeedback3c0): static
+    {
+        if (!$this->campaignFeedback360s->contains($campaignFeedback3c0)) {
+            $this->campaignFeedback360s->add($campaignFeedback3c0);
+            $campaignFeedback3c0->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCampaignFeedback360(CampaignFeedback360 $campaignFeedback3c0): static
+    {
+        if ($this->campaignFeedback360s->removeElement($campaignFeedback3c0)) {
+            // set the owning side to null (unless already changed)
+            if ($campaignFeedback3c0->getCompany() === $this) {
+                $campaignFeedback3c0->setCompany(null);
             }
         }
 
