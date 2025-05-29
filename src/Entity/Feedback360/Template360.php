@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Feedback360;
 
-use App\Repository\Template360Repository;
+use App\Entity\Company;
+use App\Repository\Feedback360\Template360Repository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;

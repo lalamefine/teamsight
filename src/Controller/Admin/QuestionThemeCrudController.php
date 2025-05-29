@@ -2,7 +2,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\QuestionTheme;
+use App\Entity\Feedback360\QuestionTheme;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;

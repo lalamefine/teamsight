@@ -2,6 +2,10 @@
 
 namespace App\Entity;
 
+use App\Entity\Feedback360\CampaignFeedback360;
+use App\Entity\Feedback360\ObsProfile;
+use App\Entity\Feedback360\QuestionTheme;
+use App\Entity\Feedback360\Template360;
 use App\Repository\CompanyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

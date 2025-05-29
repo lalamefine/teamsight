@@ -2,37 +2,25 @@
 
 namespace App\Controller\Configuration;
 
-use App\Entity\Company;
+use App\Abstraction\AbstractCompanyController;
 use App\Entity\CompanyConfig;
-use App\Entity\ObsProfile;
-use App\Entity\WebUser;
-use App\Repository\ObsProfileRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Entity\Feedback360\ObsProfile;
+use App\Repository\Feedback360\ObsProfileRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
-final class CompanyConfController extends AbstractController
+final class CompanyConfController extends AbstractCompanyController
 {
-    public function __construct(
-        private readonly EntityManagerInterface $em,
-        private readonly ObsProfileRepository $obsProfileRepository,
-    ){}
-
     #[Route('/cf/company', name: 'app_conf_company')]
-    public function index(Request $request, EntityManagerInterface $em, #[CurrentUser] ?WebUser $user = null): Response
-    {
-        // Récupérer la company active pour l'utilisateur courant
-        $company = $user?->getCompany() ?? throw $this->createNotFoundException('Aucune entreprise associée à l\'utilisateur actif');
-        
+    public function index(Request $request): Response
+    {        
         // Initialisation de la configuration par défaut si elle n'existe pas
-        $companyConfig = $company->getConfig()??(function () use ($em, $company) {
+        $companyConfig = $this->company->getConfig()??(function () {
             $cc = new CompanyConfig();
-            $cc->setCompany($company);
-            $em->persist($cc);
-            $em->flush();
+            $cc->setCompany($this->company);
+            $this->em->persist($cc);
+            $this->em->flush();
             return $cc;
         })();
         
@@ -43,7 +31,7 @@ final class CompanyConfController extends AbstractController
             
             // Traiter les profils d'observateurs si nécessaire
             if (isset($formData['obsp_lib']) && isset($formData['obsp_id']) && isset($formData['obsp_anon'])) {
-                $this->handleObserverProfiles($formData, $company, $em);
+                $this->handleObserverProfiles($formData);
             }
             
             // Mise à jour de la configuration
@@ -62,12 +50,12 @@ final class CompanyConfController extends AbstractController
             
             $companyConfig->setDataRetention((int)($formData['DataRetention'] ?? 36));
             
-            $em->flush();
+            $this->em->flush();
             $this->addFlash('success', 'Configuration enregistrée avec succès.');
         }
         
         return $this->render('configuration/confCompany/index.html.twig', [
-            'company' => $company,
+            'company' => $this->company,
             'companyConfig' => $companyConfig
         ]);
     }
@@ -75,14 +63,16 @@ final class CompanyConfController extends AbstractController
     /**
      * Gère les profils d'observateurs
      */
-    private function handleObserverProfiles(array $formData, Company $company, EntityManagerInterface $em): void
+    private function handleObserverProfiles(array $formData): void
     {
+        /** @var ObsProfileRepository $obsProfileRepository */
+        $obsProfileRepository = $this->em->getRepository(ObsProfile::class);
         // Supprimer les profils marqués pour suppression
         if (isset($formData['obsp_del']) && is_array($formData['obsp_del'])) {
             foreach ($formData['obsp_del'] as $id) {
-                $profile = $this->obsProfileRepository->findOneBy(['id' => $id, 'company' => $company]);
+                $profile = $obsProfileRepository->findOneBy(['id' => $id, 'company' => $this->company]);
                 if ($profile && $profile->isEditable()) {
-                    $em->remove($profile);
+                    $this->em->remove($profile);
                 }
             }
         }
@@ -96,11 +86,11 @@ final class CompanyConfController extends AbstractController
             
             if ($id === 'new') {
                 // Nouveau profil
-                $profile = new ObsProfile($name, $isAnonymous, $company);
-                $em->persist($profile);
+                $profile = new ObsProfile($name, $isAnonymous, $this->company);
+                $this->em->persist($profile);
             } else {
                 // Profil existant
-                $profile = $this->obsProfileRepository->findOneBy(['id' => $id, 'company' => $company]);
+                $profile = $obsProfileRepository->findOneBy(['id' => $id, 'company' => $this->company]);
                 if (!$profile || !$profile->isEditable()) {
                     continue;
                 }
@@ -112,17 +102,14 @@ final class CompanyConfController extends AbstractController
     }
 
     #[Route('/cf/company-campaigns', name: 'app_conf_company_campaigns')]
-    public function companyConfCamp(Request $request, EntityManagerInterface $em, #[CurrentUser] ?WebUser $user = null): Response
+    public function companyConfCamp(Request $request): Response
     {
-        // Récupérer la company active pour l'utilisateur courant
-        $company = $user?->getCompany() ?? throw $this->createNotFoundException('Aucune entreprise associée à l\'utilisateur actif');
-
         // Initialisation de la configuration par défaut si elle n'existe pas
-        $companyConfig = $company->getConfig()??(function () use ($em, $company) {
+        $companyConfig = $this->company->getConfig()??(function () {
             $cc = new CompanyConfig();
-            $cc->setCompany($company);
-            $em->persist($cc);
-            $em->flush();
+            $cc->setCompany($this->company);
+            $this->em->persist($cc);
+            $this->em->flush();
             return $cc;
         })();
 
@@ -133,12 +120,12 @@ final class CompanyConfController extends AbstractController
            
             $companyConfig->setUseAccountDynCamp(isset($formData['UseAccountDynCamp']));
             $companyConfig->setUseAccountDynPan(isset($formData['UseAccountDynPan']));
-            $em->flush();
+            $this->em->flush();
             $this->addFlash('success', 'Configuration enregistrée avec succès.');
         }
 
         return $this->render('configuration/confCompany/campaign.html.twig', [ 
-            'company' => $company,
+            'company' => $this->company,
             'companyConfig' => $companyConfig,
         ]);
     }

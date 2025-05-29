@@ -3,7 +3,42 @@
 {% block title %}Gestion des campagnes{% endblock %}
 
 {% block body %}
-    
+    <div class="container pt-3">
+        <div class="bg-white shadow p-4 rounded w-100" >
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Gestion des campagnes</h1>
+                <a href="{{ path('app_campagne_new_generic') }}" class="btn {{ campagnes is empty ? 'btn-primary' : 'btn-secondary' }}">
+                    <span class="bi bi-plus"></span>
+                    Créer une nouvelle campagne
+                </a>
+            </div>
 
+            {% if campagnes is empty %}
+                <p>Aucune campagne trouvée.</p>
+            {% else %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Date de début</th>
+                            <th>Date de fin</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for campagne in campagnes %}
+                            <tr>
+                                <td>{{ campagne.id }}</td>
+                                <td>{{ campagne.nom }}</td>
+                                <td>{{ campagne.dateDebut ? campagne.dateDebut|date('Y-m-d') : 'N/A' }}</td>
+                                <td>{{ campagne.dateFin ? campagne.dateFin|date('Y-m-d') : 'N/A' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
 
+        </div>
+    </div>
 {% endblock %}

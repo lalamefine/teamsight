@@ -1,23 +1,23 @@
 <?php
 
-namespace App\Repository;
+namespace App\Repository\Feedback360;
 
-use App\Entity\QuestionTheme;
+use App\Entity\Feedback360\Question360;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<QuestionTheme>
+ * @extends ServiceEntityRepository<Question360>
  */
-class QuestionThemeRepository extends ServiceEntityRepository
+class Question360Repository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, QuestionTheme::class);
+        parent::__construct($registry, Question360::class);
     }
 
     //    /**
-    //     * @return QuestionTheme[] Returns an array of QuestionTheme objects
+    //     * @return Question360[] Returns an array of Question360 objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class QuestionThemeRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?QuestionTheme
+    //    public function findOneBySomeField($value): ?Question360
     //    {
     //        return $this->createQueryBuilder('q')
     //            ->andWhere('q.exampleField = :val')

@@ -1,1 +1,48 @@
-Fontionnalité à venir : Import - Export CSV
+<div id="user-csv-import">
+    {% if first100 is defined and first100 is not null %}
+        <h5>Importation de {{ total }} utilisateurs, merci de vérifier la cohérence des données : </h5>
+        <form action="{{ path('company_users_csv_import') }}" method="POST" class="m-2 d-flex flex-column">
+            <label for="clearBeforeImport" class="form-check-label">
+                <input type="checkbox" name="clearBeforeImport" id="clearBeforeImport" value="true" class="form-check-input">
+                Désactiver les utilisateurs absent de l'import
+            </label>
+
+            <button type="submit" name="confimImport" value="true" class="btn btn-primary">Confirmer l'import</button>
+        </form>
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    {% for key, value in first100[0] %}
+                        <th>{{ key }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+            {% for row in first100 %}
+                <tr>
+                    {% for key, value in row %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="100%">Aucune donnée à afficher</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <a href="{{ path('company_users_csv_template') }}" target="_blank" class="btn btn-secondary mb-2">Télécharger le template</a>
+        <a href="{{ path('company_users_csv_export') }}" target="_blank" class="btn btn-secondary mb-2">Exporter les données</a>
+        <form hx-post="{{ path('company_users_csv_import') }}" 
+            hx-target="#user-csv-import" 
+            enctype="multipart/form-data">
+
+            <div class="input-group m-y-2">
+                <input type="file" class="form-control" id="csvFile" name="csvFile" accept=".csv" required>
+                <button type="submit" class="btn btn-primary">Importer le fichier</button>
+            </div>
+        </form>
+        
+    {% endif %}
+</div>

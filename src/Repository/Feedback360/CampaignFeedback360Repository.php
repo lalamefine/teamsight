@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository;
+namespace App\Repository\Feedback360;
 
-use App\Entity\CampaignFeedback360;
+use App\Entity\Feedback360\CampaignFeedback360;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

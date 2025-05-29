@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Feedback360;
 
-use App\Repository\QuestionThemeRepository;
+use App\Entity\Company;
+use App\Repository\Feedback360\QuestionThemeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;

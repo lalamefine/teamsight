@@ -1,22 +1,23 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Feedback360;
 
-use App\Repository\CampaignFeedback360Repository;
-use Doctrine\DBAL\Types\Types;
+use App\Abstraction\CampaignInterface;
+use App\Entity\Company;
+use App\Repository\Feedback360\CampaignFeedback360Repository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CampaignFeedback360Repository::class)]
-class CampaignFeedback360
+class CampaignFeedback360 implements CampaignInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'campaigns')]
+    #[ORM\ManyToOne(inversedBy: 'campaignFeedback360s')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?company $company = null;
+    private ?Company $company = null;
 
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
@@ -39,6 +40,9 @@ class CampaignFeedback360
     #[ORM\Column(length: 16)]
     private string $currentState = self::STATE_DRAFT;
 
+    #[ORM\Column(length: 128, nullable: true)]
+    private ?string $name = null;
+
 
     public function __construct()
     {
@@ -48,6 +52,17 @@ class CampaignFeedback360
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return  $this->name;
+    }
+
+    public function setName(?string $name): static
+    {
+        $this->name = $name;
+        return $this;
     }
 
     public function getCompany(): ?company
@@ -185,5 +200,20 @@ class CampaignFeedback360
         $this->reportValidationDeadline = $reportValidationDeadline;
 
         return $this;
+    }
+
+    public function getEvalProgess(): ?float
+    {
+        return ($this->getEvalFinished() / $this->getEvalTotal()) ?? 0;
+    }
+
+    public function getEvalFinished(): ?float
+    {
+        return null;
+    }
+
+    public function getEvalTotal(): ?float
+    {
+        return null;
     }
 }

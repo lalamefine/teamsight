@@ -2,25 +2,22 @@
 
 namespace App\Controller\Configuration;
 
-use App\Entity\Question360;
-use App\Entity\QuestionTheme;
-use App\Entity\Template360;
-use App\Entity\WebUser;
-use App\Repository\ObsProfileRepository;
-use App\Repository\QuestionThemeRepository;
-use App\Repository\Template360Repository;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Abstraction\AbstractCompanyController;
+use App\Entity\Feedback360\Question360;
+use App\Entity\Feedback360\QuestionTheme;
+use App\Entity\Feedback360\Template360;
+use App\Repository\Feedback360\Template360Repository;
+use App\Repository\Feedback360\ObsProfileRepository;
+use App\Repository\Feedback360\QuestionThemeRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
-final class Template360Controller extends AbstractController
+final class Template360Controller extends AbstractCompanyController
 {
     #[Route('/cf/t360', name: 'app_conf_templates_360_list', methods:['GET'], defaults: ['selectedTemplateId' => null])]
     #[Route('/cf/t360/{selectedTemplateId}', name: 'app_conf_templates_360')]
-    public function index(?string $selectedTemplateId, Request $request, Template360Repository $template360Repository, #[CurrentUser] WebUser $user, EntityManagerInterface $em): Response
+    public function index(?string $selectedTemplateId, Request $request, Template360Repository $template360Repository): Response
     {
         /** @var Template360|null */
         $selectedTemplate = null;
@@ -39,10 +36,10 @@ final class Template360Controller extends AbstractController
             $selectedTemplate->setName($formData['name']);
             $selectedTemplate->setDescription($formData['description']);
             $selectedTemplate->setUseQuestionTheme(isset($formData['useQuestionTheme']));
-            $selectedTemplate->setCompany($user->getCompany());
+            $selectedTemplate->setCompany($this->company);
             $selectedTemplate->setResponses($formData['responses']);
-            $em->persist($selectedTemplate);
-            $em->flush();
+            $this->em->persist($selectedTemplate);
+            $this->em->flush();
             $this->addFlash('success', 'Template updated successfully');
         }
         return $this->render('configuration/template360/index.html.twig', [
@@ -63,7 +60,7 @@ final class Template360Controller extends AbstractController
     #[Route('/cf/t360/{template}/question/{question360}', name: 'app_conf_templates_360_question', defaults: ['question360' => null])]
     public function question(
         Request $request, Template360 $template, ?Question360 $question360, 
-        EntityManagerInterface $em, ObsProfileRepository $obsProfileRepository, QuestionThemeRepository $questionThemeRepository): Response
+        ObsProfileRepository $obsProfileRepository, QuestionThemeRepository $questionThemeRepository): Response
     {
         if ($request->getMethod() === 'POST') {
             if (!$question360) {
@@ -84,8 +81,8 @@ final class Template360Controller extends AbstractController
                     $newTheme = new QuestionTheme();
                     $newTheme->setName($form['thematique']);
                     $newTheme->setCompany($template->getCompany());
-                    $em->persist($newTheme);
-                    $em->flush();
+                    $this->em->persist($newTheme);
+                    $this->em->flush();
                     $question360->setThematique($newTheme);
                 }
             }
@@ -97,8 +94,8 @@ final class Template360Controller extends AbstractController
                 $question360->addProfile($profile);
             },$obsProfileRepository->findBy(['id' => $profiles]));
             $template->addQuestion($question360);
-            $em->persist($question360);
-            $em->flush();
+            $this->em->persist($question360);
+            $this->em->flush();
             return $this->questionList($template);
         }
         return $this->render('configuration/template360/questionEditModal.html.twig', [

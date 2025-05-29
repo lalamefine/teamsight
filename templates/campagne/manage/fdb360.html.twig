@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion de campagne{% endblock %}
+
+{% block body %}
+    <div class="container pt-3">
+        <div class="d-flex justify-content-between align-items-center mb-3 gap-3">
+            <div class="bg-white shadow p-3 rounded col-8" >
+                <h3>Etapes de la campagne</h3>
+                <ul>
+                    <li>Création de la campagne</li>
+                    <li>Ajout des utilisateurs</li>
+                    <li>Préparation des observations</li>
+                    <li>(Optionnel) Proposition d'un panel par les observés</li>
+                    <li>(Optionnel) Validation d'un panel par les supérieurs hiérarchique des observés</li>
+                    <li>Validation des panels par le gestionnaire de la campagne</li>
+                    <li>Démarage de la campagne</li>rempilot
+                    
+                    <li>Clôture de la campagne</li>
+                    <li>Analyse des résultats</li>
+                </ul>
+                
+            </div>
+            <div class="bg-white shadow p-3 rounded col-4" >
+                Ajout d'utillisateurs
+            </div>
+        </div>
+        {% if campaign.id is defined %}
+            <div class="bg-white shadow p-4 rounded w-100">
+                <h3>Observations en préparation</h3>
+                <input type="text" class="form-control mb-3" placeholder="Rechercher par nom ou ID" aria-label="Rechercher">
+                <div>
+
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

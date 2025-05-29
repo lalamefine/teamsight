@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Feedback360;
 
-use App\Repository\ObsProfileRepository;
+use App\Entity\Company;
+use App\Repository\Feedback360\ObsProfileRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;

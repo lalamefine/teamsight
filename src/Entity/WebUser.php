@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: WebUserRepository::class)]
+#[ORM\UniqueConstraint(name: 'email_unique', columns: ['email', 'company_id'])]
+#[ORM\UniqueConstraint(name: 'compid_unique', columns: ['company_internal_id', 'company_id'])]
 class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -25,13 +27,13 @@ class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterfac
     #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
     private ?array $roles = [];
 
-    #[ORM\Column]
+    #[ORM\Column(options: ['default' => true])]
     private bool $canConnect = true;
 
-    #[ORM\Column]
+    #[ORM\Column(options: ['default' => true])]
     private bool $displayed = true;
 
-    #[ORM\Column]
+    #[ORM\Column(options: ['default' => false])]
     private bool $emailValidated = false;
 
     #[ORM\Column(length: 255, nullable: true)]

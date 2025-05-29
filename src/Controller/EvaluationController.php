@@ -2,11 +2,11 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Abstraction\AbstractCompanyController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-final class EvaluationController extends AbstractController
+final class EvaluationController extends AbstractCompanyController
 {
     #[Route('/evaluation', name: 'app_evaluation')]
     public function index(): Response

@@ -1,11 +1,14 @@
 <?php
 
+namespace App\Abstraction;
+
 use App\Entity\Company;
 
 interface CampaignInterface
 {
     public function getId(): ?int;
     public function getCompany(): ?Company;
+    public function getName(): ?string;
     public function setCompany(?Company $company): static;
     public function getCreatedAt(): ?\DateTimeImmutable;
     public function setCreatedAt(\DateTimeImmutable $createdAt): static;
