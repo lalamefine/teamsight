@@ -5,6 +5,16 @@
 
 {% block navbar %}
 	<div class="position-relative py-2">
+		<div class="position-absolute top-0 start-0 p-3 d-flex justify-content-between align-items-center">
+			<a class="navbar-brand d-flex align-middle" href="/">
+				<div class="me-2">
+                    <img src="/svg/favicon.svg" alt="Logo Icon" class="m-auto" width="36" height="36">
+				</div>
+				<h4 class="mt-1 ms-2 text-primary fw-bold">
+					Teamsight
+				</h4>
+			</a>
+		</div>
 		<div class="position-absolute top-0 end-0 p-3">
 			<div class="d-flex flex-column flex-md-row justify-content-center">
 				<a href="{{ path('app_login') }}" class="btn btn-primary me-md-2 mb-2 mb-md-0">Login</a>
@@ -14,20 +24,288 @@
 {% endblock %}
 
 {% block body %}
-	<style>
-		.example-wrapper {
-			margin: 1em auto;
-			max-width: 800px;
-			width: 95%;
-			font: 18px / 1.5 sans-serif;
-		}
-		.example-wrapper code {
-			background: #F5F5F5;
-			padding: 2px 6px;
-		}
-	</style>
 
-	<div class="example-wrapper">
-		<h1>Landing page</h1>
-	</div>
+    <style>
+        :root {
+            --bs-primary: #4338CA; /* Votre $primary: rgb(67 56 202) */
+            --bs-primary-rgb: 67, 56, 202;
+            --bs-secondary: #6366F1; /* Votre $secondary: rgb(99 102 241) */
+            --bs-secondary-rgb: 99, 102, 241;
+
+            /* Nuances personnalisées pour des boutons spécifiques si nécessaire */
+            --custom-primary-lighter: #E0E7FF; /* Similaire à indigo-100 */
+            --custom-primary-lighter-darker: #C7D2FE; /* Pour hover sur btn-light-primary */
+            --custom-primary-darker-for-hover: #3A30B0; /* Pour hover sur btn-primary */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #374151; /* Equivalent à text-gray-800 */
+        }
+
+        /* Ajustement du hover pour btn-primary si nécessaire */
+        .btn-primary:hover {
+          background-color: var(--custom-primary-darker-for-hover);
+          border-color: var(--custom-primary-darker-for-hover);
+        }
+
+        /* Bouton pour "En savoir plus" (fond clair, texte primaire) */
+        .btn-light-primary {
+            background-color: var(--custom-primary-lighter) !important;
+            border-color: var(--custom-primary-lighter) !important;
+            color: var(--bs-primary) !important;
+        }
+        .btn-light-primary:hover {
+            background-color: var(--custom-primary-lighter-darker) !important;
+            border-color: var(--custom-primary-lighter-darker) !important;
+            color: var(--custom-primary-darker-for-hover) !important;
+        }
+
+        .hero-bg {
+            background-color: #F3F4F6; /* Gris clair, Tailwind gray-100 */
+        }
+
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; /* Ombre Bootstrap lg */
+        }
+
+        .cta-button { /* Transition générale pour les boutons CTA */
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Fond des icônes de fonctionnalités */
+        .icon-bg {
+            background-color: var(--bs-primary) !important;
+            width: 50px; /* Taille fixe pour l'icône */
+            height: 50px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Couleur de survol pour les liens de la navbar */
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            color: var(--bs-primary) !important;
+        }
+        .navbar-brand {
+            color: var(--bs-primary) !important;
+            font-weight: bold;
+        }
+        .navbar-light .navbar-toggler-icon { /* Assurez-vous que l'icône du toggler est visible */
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(67, 56, 202, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+
+        /* Couleur de survol pour les liens du pied de page */
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.6); /* Gris clair pour le texte du footer */
+            text-decoration: none;
+        }
+        .footer-links a:hover {
+            color: var(--bs-primary) !important;
+        }
+        .footer-bg {
+            background-color: #1f2937; /* Equivalent à bg-gray-800 */
+        }
+
+        /* Sous-titre de section (ex: "Nos Solutions") */
+        .section-subheading {
+            color: var(--bs-primary);
+            font-weight: 600; /* semibold */
+            text-transform: uppercase;
+            font-size: 0.875rem; /* text-base (Tailwind) -> 1rem, so small or .875rem */
+        }
+        .section-title {
+            font-weight: 800; /* extrabold */
+        }
+
+        /* Pour que les cartes de fonctionnalités aient la même hauteur */
+        .feature-card-deck .card {
+            height: 100%;
+        }
+        
+        /* Section CTA (Appel à l'action) */
+        .cta-section {
+            background-color: var(--bs-primary);
+        }
+
+    </style>
+
+    <header class="hero-bg py-5 mt-5">
+        <div class="container text-center py-md-5">
+            <h1 class="display-4 fw-bolder text-dark"> <span class="d-block">Optimisez l'engagement</span>
+                <span class="d-block text-primary">de vos collaborateurs.</span>
+            </h1>
+            <p class="lead text-muted mt-4 mx-auto" style="max-width: 45rem;"> Notre plateforme SaaS simplifie et modernise la manière dont vous menez les consultations clés au sein de votre entreprise.
+            </p>
+            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center mt-5">
+                <a href="#" class="btn btn-primary btn-lg px-4 cta-button shadow-sm">
+                    Commencer gratuitement
+                </a>
+                <a href="#fonctionnalites" class="btn btn-light-primary btn-lg px-4 cta-button shadow-sm">
+                    En savoir plus
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section id="fonctionnalites" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-subheading">Nos Solutions</h2>
+                <p class="display-5 section-title text-dark mt-2">
+                    Tout ce dont vous avez besoin pour consulter vos salariés
+                </p>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 g-4 feature-card-deck">
+                <div class="col">
+                    <div class="card feature-card shadow-sm rounded-3 border-0 h-100">
+                        <div class="card-body p-4 p-lg-5">
+                            <div class="icon-bg text-white rounded-2 shadow-lg mb-3">
+                                <svg class="m-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-5 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
+                                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                                </svg>
+                            </div>
+                            <h3 class="h5 fw-semibold text-dark my-3">Entretiens Annuels</h3>
+                            <p class="text-muted small">
+                                Structurez et suivez facilement les entretiens annuels d'évaluation. Fixez des objectifs clairs et mesurez la performance de manière collaborative.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card feature-card shadow-sm rounded-3 border-0 h-100">
+                        <div class="card-body p-4 p-lg-5">
+                            <div class="icon-bg text-white rounded-2 shadow-lg mb-3">
+                                <svg class="m-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM4.785 6.033a.237.237 0 0 0 .27-.123c.11-.205.328-.39.635-.515.307-.124.672-.19.98-.19h.003c.308 0 .673.066.98.19.307.124.525.31.635.515.117.218.344.218.461 0 .11-.205.328-.39.635-.515.307-.124.672-.19.98-.19h.003c.308 0 .673.066.98.19.307.124.525.31.635.515a.237.237 0 0 0 .27.123l.11-.052a.237.237 0 0 0 .124-.27c-.11-.205-.328-.39-.635-.515-.307-.124-.672-.19-.98-.19h-.003c-.308 0-.673.066-.98.19-.307.124-.525.31-.635.515-.117.218-.344.218-.461 0-.11-.205-.328-.39-.635-.515-.307-.124-.672-.19-.98-.19h-.003c-.308 0-.673.066-.98.19-.307.124-.525.31-.635.515a.237.237 0 0 0 .123.27l.11.052zm-.022 2.982a.237.237 0 0 0 .27-.123c.11-.205.328-.39.635-.515.307-.124.672-.19.98-.19h.003c.308 0 .673.066.98.19.307.124.525.31.635.515.117.218.344.218.461 0 .11-.205.328-.39.635-.515.307-.124.672-.19.98-.19h.003c.308 0 .673.066.98.19.307.124.525.31.635.515a.237.237 0 0 0 .27.123l.11-.052a.237.237 0 0 0 .124-.27c-.11-.205-.328-.39-.635-.515-.307-.124-.672-.19-.98-.19h-.003c-.308 0-.673.066-.98.19-.307.124-.525.31-.635.515-.117.218-.344.218-.461 0-.11-.205-.328-.39-.635-.515-.307-.124-.672-.19-.98-.19h-.003c-.308 0-.673.066-.98.19-.307.124-.525.31-.635.515a.237.237 0 0 0 .123.27l.11.052z"/>
+                                </svg>
+                            </div>
+                            <h3 class="h5 fw-semibold text-dark my-3">Feedback 360°</h3>
+                            <p class="text-muted small">
+                                Obtenez une vision complète des compétences et des comportements grâce à des évaluations multi-sources (managers, pairs, subordonnés).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                     <div class="card feature-card shadow-sm rounded-3 border-0 h-100">
+                        <div class="card-body p-4 p-lg-5">
+                            <div class="icon-bg text-white rounded-2 shadow-lg mb-3">
+                                <svg class="m-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M4 11H2v3h2v-3zm5-4H7v7h2V7zm5-5H12v12h2V2zM0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V2zm1 1v10h12V3H1z"/>
+                                </svg>
+                            </div>
+                            <h3 class="h5 fw-semibold text-dark my-3">Sondages d'Opinion</h3>
+                            <p class="text-muted small">
+                                Mesurez le climat social, recueillez des avis et identifiez les points d'amélioration grâce à des sondages personnalisables et anonymes.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card feature-card shadow-sm rounded-3 border-0 h-100">
+                        <div class="card-body p-4 p-lg-5">
+                            <div class="icon-bg text-white rounded-2 shadow-lg mb-3">
+                                 <svg class="m-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M9.05.435c-.58-.58-1.52-.58-2.1 0L4.047 3.339 8 7.293l3.953-3.954L9.05.435zm3.61 3.611L8.708 8l3.954 3.953.001-.001.001.001 2.904-2.904c.58-.58.58-1.519 0-2.098l-2.904-2.904zm-7.22 0L1.292 1.292c-.58-.58-1.519-.58-2.098 0L.435 4.196l3.953 3.954L1.292 4.047zm3.61 7.22L8 8.708l-3.954 3.953-.001.001-.001-.001-2.904 2.904c-.58.58-.58 1.519 0 2.098l2.904 2.904c.58.58 1.519.58 2.098 0l2.904-2.904 3.953-3.954z"/>
+                                </svg>
+                            </div>
+                            <h3 class="h5 fw-semibold text-dark my-3">Gestion des Compétences</h3>
+                            <p class="text-muted small">
+                                Identifiez, évaluez et développez les compétences de vos salariés. Alignez les talents avec les besoins stratégiques de votre entreprise.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="cta" class="py-5 cta-section">
+        <div class="container text-center py-md-4">
+            <h2 class="display-5 fw-bolder text-white">
+                Prêt à transformer votre parcours salarié ?
+            </h2>
+            <p class="lead text-white-50 mt-3 mb-4 mx-auto" style="max-width: 40rem;">
+                Découvrez comment notre solution peut vous aider à mieux comprendre et engager vos salariés.
+            </p>
+            <a href="#" class="btn btn-light btn-lg px-4 cta-button text-primary shadow-sm">
+                Demander une démo personnalisée
+            </a>
+        </div>
+    </section>
+    
+    <section id="tarifs" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 section-title text-dark">
+                    Des tarifs adaptés à vos besoins
+                </h2>
+                <p class="lead text-muted mt-3 mx-auto" style="max-width: 40rem;">
+                    Choisissez le plan qui correspond le mieux à la taille et aux ambitions de votre entreprise.
+                </p>
+            </div>
+            <div class="text-center">
+                <p class="text-muted">Nos plans tarifaires seront bientôt disponibles. Contactez-nous pour une offre sur mesure !</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                 <h2 class="display-5 section-title text-dark">
+                    Contactez-nous
+                </h2>
+                <p class="lead text-muted mt-3 mx-auto" style="max-width: 40rem;">
+                    Une question ? Envie d'en savoir plus ? Notre équipe est là pour vous aider.
+                </p>
+            </div>
+            <div class="text-center">
+                <p class="fs-5 text-muted">Email: <a href="mailto:contact@votredomaine.com" class="text-primary">contact@votredomaine.com</a></p>
+                <p class="fs-5 text-muted mt-2">Téléphone: <a href="tel:+33000000000" class="text-primary">+33 X XX XX XX XX</a></p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-bg text-white py-5">
+        <div class="container text-center">
+            <nav class="footer-links d-flex flex-wrap justify-content-center gap-3 mb-4">
+                <a href="#">À propos</a>
+                <a href="#">Carrières</a>
+                <a href="#">Mentions légales</a>
+            </nav>
+            <p class="small text-white-50">&copy; 2025 Teamsight. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+	<script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                // Ne pas empêcher le comportement par défaut pour les togglers Bootstrap (comme le menu mobile)
+                if (this.getAttribute('data-bs-toggle')) {
+                    return;
+                }
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
 {% endblock %}

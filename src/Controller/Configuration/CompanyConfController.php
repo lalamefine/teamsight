@@ -16,9 +16,9 @@ final class CompanyConfController extends AbstractCompanyController
     public function index(Request $request): Response
     {        
         // Initialisation de la configuration par défaut si elle n'existe pas
-        $companyConfig = $this->company->getConfig()??(function () {
+        $companyConfig = $this->getCompany()->getConfig()??(function () {
             $cc = new CompanyConfig();
-            $cc->setCompany($this->company);
+            $cc->setCompany($this->getCompany());
             $this->em->persist($cc);
             $this->em->flush();
             return $cc;
@@ -55,7 +55,7 @@ final class CompanyConfController extends AbstractCompanyController
         }
         
         return $this->render('configuration/confCompany/index.html.twig', [
-            'company' => $this->company,
+            'company' => $this->getCompany(),
             'companyConfig' => $companyConfig
         ]);
     }
@@ -70,7 +70,7 @@ final class CompanyConfController extends AbstractCompanyController
         // Supprimer les profils marqués pour suppression
         if (isset($formData['obsp_del']) && is_array($formData['obsp_del'])) {
             foreach ($formData['obsp_del'] as $id) {
-                $profile = $obsProfileRepository->findOneBy(['id' => $id, 'company' => $this->company]);
+                $profile = $obsProfileRepository->findOneBy(['id' => $id, 'company' => $this->getCompany()]);
                 if ($profile && $profile->isEditable()) {
                     $this->em->remove($profile);
                 }
@@ -86,11 +86,11 @@ final class CompanyConfController extends AbstractCompanyController
             
             if ($id === 'new') {
                 // Nouveau profil
-                $profile = new ObsProfile($name, $isAnonymous, $this->company);
+                $profile = new ObsProfile($name, $isAnonymous, $this->getCompany());
                 $this->em->persist($profile);
             } else {
                 // Profil existant
-                $profile = $obsProfileRepository->findOneBy(['id' => $id, 'company' => $this->company]);
+                $profile = $obsProfileRepository->findOneBy(['id' => $id, 'company' => $this->getCompany()]);
                 if (!$profile || !$profile->isEditable()) {
                     continue;
                 }
@@ -105,9 +105,9 @@ final class CompanyConfController extends AbstractCompanyController
     public function companyConfCamp(Request $request): Response
     {
         // Initialisation de la configuration par défaut si elle n'existe pas
-        $companyConfig = $this->company->getConfig()??(function () {
+        $companyConfig = $this->getCompany()->getConfig()??(function () {
             $cc = new CompanyConfig();
-            $cc->setCompany($this->company);
+            $cc->setCompany($this->getCompany());
             $this->em->persist($cc);
             $this->em->flush();
             return $cc;
@@ -125,7 +125,7 @@ final class CompanyConfController extends AbstractCompanyController
         }
 
         return $this->render('configuration/confCompany/campaign.html.twig', [ 
-            'company' => $this->company,
+            'company' => $this->getCompany(),
             'companyConfig' => $companyConfig,
         ]);
     }

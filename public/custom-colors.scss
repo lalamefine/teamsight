@@ -1,0 +1,23 @@
+$primary : #4338ca !default;
+$secondary: #6366f1 !default;
+$tertiary: #D5CFE1 !default;
+$success: #28a745 !default;
+$info: #17a2b8 !default;
+$base: #F2EDE3 !default;
+$warning: #ffc107 !default;
+$danger: #dc3545 !default;
+$light: #f8f9fa !default;
+$dark: #0E1116 !default;
+
+$theme-colors: (
+    "primary":    $primary,
+    "secondary":  $secondary,
+    "tertiary":   $tertiary,
+    "success":    $success,
+    "info":       $info,
+    "base":       $base,
+    "warning":    $warning,
+    "danger":     $danger,
+    "light":      $light,
+    "dark":       $dark
+);

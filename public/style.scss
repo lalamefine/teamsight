@@ -1,0 +1,73 @@
+// Custom.scss
+// Option B: Include parts of Bootstrap
+
+// 1. Include functions first (so you can manipulate colors, SVGs, calc, etc)
+@import "../public/bootstrap-scss/functions";
+
+// 2. Include any default variable overrides here
+@import "../public/custom-colors";
+
+// 3. Include remainder of required Bootstrap stylesheets (including any separate color mode stylesheets)
+@import "../public/bootstrap-scss/variables";
+@import "../public/bootstrap-scss/variables-dark";
+
+// 4. Include any default map overrides here
+
+// 5. Include remainder of required parts
+@import "../public/bootstrap-scss/maps";
+@import "../public/bootstrap-scss/mixins";
+@import "../public/bootstrap-scss/root";
+
+// 6. Include any other optional stylesheet partials as desired; list below is not inclusive of all available stylesheets
+@import "../public/bootstrap-scss/utilities";
+@import "../public/bootstrap-scss/reboot";
+
+@import "../public/bootstrap-scss/root";
+@import "../public/bootstrap-scss/reboot";
+@import "../public/bootstrap-scss/type";
+@import "../public/bootstrap-scss/images";
+@import "../public/bootstrap-scss/containers";
+@import "../public/bootstrap-scss/grid";
+@import "../public/bootstrap-scss/tables";
+@import "../public/bootstrap-scss/forms";
+@import "../public/bootstrap-scss/buttons";
+@import "../public/bootstrap-scss/transitions";
+@import "../public/bootstrap-scss/dropdown";
+@import "../public/bootstrap-scss/button-group";
+@import "../public/bootstrap-scss/nav";
+@import "../public/bootstrap-scss/navbar";
+@import "../public/bootstrap-scss/card";
+@import "../public/bootstrap-scss/accordion";
+@import "../public/bootstrap-scss/breadcrumb";
+@import "../public/bootstrap-scss/pagination";
+@import "../public/bootstrap-scss/badge";
+@import "../public/bootstrap-scss/alert";
+@import "../public/bootstrap-scss/progress";
+@import "../public/bootstrap-scss/list-group";
+@import "../public/bootstrap-scss/close";
+@import "../public/bootstrap-scss/toasts";
+@import "../public/bootstrap-scss/modal";
+@import "../public/bootstrap-scss/tooltip";
+@import "../public/bootstrap-scss/popover";
+@import "../public/bootstrap-scss/carousel";
+@import "../public/bootstrap-scss/spinners";
+@import "../public/bootstrap-scss/offcanvas";
+@import "../public/bootstrap-scss/placeholders";
+// ...
+
+// 7. Optionally include utilities API last to generate classes based on the Sass map in `_utilities.scss`
+@import "../public/bootstrap-scss/utilities/api";
+
+// 8. Add additional custom code here
+.nav-link:hover {
+  color: var(--bs-primary) !important;
+}
+.navbar{
+    padding-bottom: 0 !important;
+}
+.navbar-brand {
+    margin-top: -8px !important;
+}
+body{
+    background-color: var(--bs-base) !important;
+}
