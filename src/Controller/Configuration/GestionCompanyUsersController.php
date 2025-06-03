@@ -113,16 +113,7 @@ final class GestionCompanyUsersController extends AbstractCompanyController
         $response->headers->set('Content-Type', 'text/csv');
         $response->headers->set('Content-Disposition', 'attachment; filename="users_template_utf8.csv"');
 
-        $csvData = "nom,prénom,email,";
-        switch ($this->getCompany()->getConfig()->getAgtIdType() ){
-            case 'company':
-                $csvData .= "id ".$this->getCompany()->getName().",";
-                break;
-            case 'email':
-                $csvData .= "-,";
-                break;
-        }
-        $csvData .= "rôles (séparateur : '+')\n";
+        $csvData = "nom*,prénom*,email*,rôles (séparateur : '+'),id ".$this->getCompany()->getName().",métier,équipe\n";
 
         return $response->setContent($csvData);
     }
@@ -134,16 +125,7 @@ final class GestionCompanyUsersController extends AbstractCompanyController
         $response->headers->set('Content-Type', 'text/csv');
         $response->headers->set('Content-Disposition', 'attachment; filename="users_utf8.csv"');
 
-        $csvData = "nom,prénom,email,";
-        switch ($this->getCompany()->getConfig()->getAgtIdType() ){
-            case 'company':
-                $csvData .= "id ".$this->getCompany()->getName().",";
-                break;
-            case 'email':
-                $csvData .= "[non utillisé],";
-                break;
-        }
-        $csvData .= "rôles (séparateur : '+')\n";
+        $csvData = "nom*,prénom*,email*,rôles (séparateur : '+'),id ".$this->getCompany()->getName().",métier,équipe\n";
 
         $users = $webUserRepository->findBy(['company' => $this->getCompany(), 'displayed' => true]);
         foreach ($users as $user) {
@@ -153,8 +135,10 @@ final class GestionCompanyUsersController extends AbstractCompanyController
                 $user->getLastName(),
                 $user->getFirstName(),
                 $user->getEmail(),
+                $roles,
                 $id,
-                $roles
+                $user->getJob() ?? '',
+                $user->getTeam() ?? ''
             );
         }
         return $response->setContent($csvData);
@@ -172,8 +156,8 @@ final class GestionCompanyUsersController extends AbstractCompanyController
                 $em->getConnection()->executeQuery("UPDATE web_user SET displayed = 0, can_connect=0 WHERE company_id = $cid");
             }
             $em->getConnection()->executeQuery("INSERT INTO web_user
-                (last_name, first_name, email, company_id, company_internal_id, roles, displayed, can_connect)
-                SELECT last_name, first_name, email, $cid, id, roles, true, true FROM $tableName
+                (last_name, first_name, email, company_id, company_internal_id, roles, displayed, can_connect, job, team)
+                SELECT last_name, first_name, email, $cid, company_internal_id, roles, true, true, job, team FROM $tableName
                 ON CONFLICT (" .  match($this->getCompany()->getConfig()->getAgtIdType()) {
                     'company' => "company_internal_id, company_id",
                     'email' => "email, company_id",
@@ -185,7 +169,10 @@ final class GestionCompanyUsersController extends AbstractCompanyController
                     roles = EXCLUDED.roles,
                     company_internal_id = EXCLUDED.company_internal_id,
                     displayed = true,
-                    can_connect = true;");
+                    can_connect = true,
+                    job = EXCLUDED.job,
+                    team = EXCLUDED.team
+                    ;");
             $em->getConnection()->executeQuery("DROP TABLE IF EXISTS $tableName");
 
             $this->addFlash('success', 'Users imported successfully.'); 
@@ -215,15 +202,16 @@ final class GestionCompanyUsersController extends AbstractCompanyController
             $em->getConnection()->executeQuery("DROP TABLE IF EXISTS $tableName;");
             $em->getConnection()->executeQuery("
                 CREATE TABLE $tableName (
-                last_name VARCHAR(255) NOT NULL,
-                first_name VARCHAR(255) NOT NULL,
-                email VARCHAR(255) NOT NULL,
-                roles TEXT NOT NULL,
-                id VARCHAR(255),
-                team VARCHAR(255) DEFAULT NULL,
-                PRIMARY KEY (id)
+                    last_name VARCHAR(64) NOT NULL,
+                    first_name VARCHAR(64) NOT NULL,
+                    email VARCHAR(255) NOT NULL,
+                    company_internal_id VARCHAR(255) NOT NULL,
+                    roles TEXT NOT NULL,
+                    job VARCHAR(128),
+                    team VARCHAR(128),
+                    PRIMARY KEY (email)
             );");
-            $sql = "INSERT INTO $tableName (last_name, first_name, email, id, roles, team) VALUES ";
+            $baseSql = "INSERT INTO $tableName (last_name, first_name, email, roles, company_internal_id, job, team) VALUES ";
             $params = [];
             $i = 0;
             while (($data = fgetcsv($handle)) !== false) {
@@ -235,27 +223,28 @@ final class GestionCompanyUsersController extends AbstractCompanyController
                 }else{
                     $roles = array_map(
                         fn ($r) => 'ROLE_'.trim($r), 
-                        explode('+', $data[4])
+                        explode('+', $data[3])
                     );
                 }
-                $params[] = trim($data[0]);
-                $params[] = trim($data[1]);
-                $params[] = trim($data[2]);
-                $params[] = trim($data[3]);
-                $params[] = implode(',', $roles);
-                $params[] = trim($data[5] ?? '');
-                $sql .= " (?, ?, ?, ?, ?, ?),";
-
+                $params = array_merge($params,[
+                    $data[0],
+                    $data[1],
+                    $data[2],
+                    implode(',', $roles),
+                    $data[4] ?? null,
+                    $data[5] ?? null,
+                    $data[6] ?? null
+                ]);
                 $i += 1;
-
                 if ($i > 1000) {
-                    $em->getConnection()->executeQuery(rtrim($sql, ','), $params);                    
-                    $sql = "INSERT INTO $tableName (last_name, first_name, email, id, roles, team) VALUES ";
+                    $selectors = implode(",",array_fill(0, $i, '(?, ?, ?, ?, ?, ?, ?)'));
+                    $em->getConnection()->executeQuery($baseSql . $selectors, $params);
                     $params = [];
                     $i = 0;
                 }
             }
-            $em->getConnection()->executeQuery(rtrim($sql, ','), $params);     
+            $selectors = implode(",",array_fill(0, $i, '(?, ?, ?, ?, ?, ?, ?)'));
+            $em->getConnection()->executeQuery($baseSql . $selectors, $params);     
             fclose($handle);
             return $this->render('configuration/companyUsers/csv.html.twig', [
                 'total' => $em->getConnection()->fetchOne("SELECT COUNT(*) FROM $tableName"),   

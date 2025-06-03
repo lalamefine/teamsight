@@ -23,28 +23,40 @@ class CompanyConfig
     private bool $useTeamGrouping = true;
 
     #[ORM\Column(options: ['default' => true])]
-    private bool $useCompRef = true;
+    private bool $useAccountDynCamp = true;
 
+    #[ORM\Column(options: ['default' => 36])]
+    private int $dataRetention = 36;
+
+    ////////////// 360 Feedback //////////////
     #[ORM\Column(options: ['default' => true])]
     private bool $questFdb360 = true;
 
-    #[ORM\Column(options: ['default' => true])]
-    private bool $questComp = true;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $fdb360askPanelToEvalue = false;
 
-    #[ORM\Column(options: ['default' => true])]
-    private bool $questEA = true;
-
-    #[ORM\Column(options: ['default' => true])]
-    private bool $questPerc = true;
-
-    #[ORM\Column(options: ['default' => true])]
-    private bool $useAccountDynCamp = true;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $fdb360askPanelToHierarchy = false;
 
     #[ORM\Column(options: ['default' => true])]
     private bool $useAccountDynPan = true;
 
-    #[ORM\Column(options: ['default' => 36])]
-    private int $dataRetention = 36;
+    ////////////// COMPETENCES //////////////
+    #[ORM\Column(options: ['default' => true])]
+    private bool $questComp = true;
+
+    #[ORM\Column(options: ['default' => true])]
+    private bool $useCompRef = true;
+
+    ////////////// EA //////////////
+    #[ORM\Column(options: ['default' => true])]
+    private bool $questEA = true;
+
+    ////////////// PERCEPTION ENTREPRISE //////////////
+    #[ORM\Column(options: ['default' => true])]
+    private bool $questPerc = true;
+
+    /////////////////////////////////////
 
     public function getCompany(): ?Company
     {
@@ -188,6 +200,30 @@ class CompanyConfig
     public function setDataRetention(int $dataRetention): static
     {
         $this->dataRetention = $dataRetention;
+
+        return $this;
+    }
+
+    public function isFdb360askPanelToEvalue(): bool
+    {
+        return $this->fdb360askPanelToEvalue;
+    }
+
+    public function setFdb360askPanelToEvalue(bool $fdb360askPanelToEvalue): static
+    {
+        $this->fdb360askPanelToEvalue = $fdb360askPanelToEvalue;
+
+        return $this;
+    }
+
+    public function isFdb360askPanelToHierarchy(): bool
+    {
+        return $this->fdb360askPanelToHierarchy;
+    }
+
+    public function setFdb360askPanelToHierarchy(bool $fdb360askPanelToHierarchy): static
+    {
+        $this->fdb360askPanelToHierarchy = $fdb360askPanelToHierarchy;
 
         return $this;
     }

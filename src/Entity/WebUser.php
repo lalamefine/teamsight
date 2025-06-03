@@ -10,7 +10,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: WebUserRepository::class)]
 #[ORM\UniqueConstraint(name: 'email_unique', columns: ['email', 'company_id'])]
-#[ORM\UniqueConstraint(name: 'compid_unique', columns: ['company_internal_id', 'company_id'])]
+#[ORM\Index(name: 'compid_unique', columns: ['company_internal_id', 'company_id'])]
 class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -47,6 +47,12 @@ class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterfac
 
     #[ORM\Column(length: 64)]
     private string $lastName;
+
+    #[ORM\Column(length: 128, nullable: true)]
+    private ?string $job = null;
+
+    #[ORM\Column(length: 128, nullable: true)]
+    private ?string $team = null;
 
     public function getUserIdentifier(): string
     {
@@ -194,6 +200,28 @@ class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterfac
     {
         $this->lastName = $lastName;
 
+        return $this;
+    }
+
+    public function getJob(): ?string
+    {
+        return $this->job;
+    }
+
+    public function setJob(?string $job): static
+    {
+        $this->job = $job;
+        return $this;
+    }
+
+    public function getTeam(): ?string
+    {
+        return $this->team;
+    }
+
+    public function setTeam(?string $team): static
+    {
+        $this->team = $team;
         return $this;
     }
 }
