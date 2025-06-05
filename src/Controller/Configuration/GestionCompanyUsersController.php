@@ -9,14 +9,25 @@ use App\Repository\WebUserRepository;
 use App\Service\UserUserAccessService;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Order;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
+use Doctrine\ORM\EntityManagerInterface;
 
 final class GestionCompanyUsersController extends AbstractCompanyController
 {
+    private array $importColumns = [
+        'last_name' => 'Nom',
+        'first_name' => 'Prénom',
+        'email' => 'Email',
+        'roles' => 'Rôles (séparateur : \'+\')',
+        'company_internal_id' => 'Identifiant d\'entreprise',
+        'job' => 'Métier',
+        'team' => 'Équipe',
+    ]; 
+
     #[Route('/gestion/company/users', name: 'app_gestion_company_users')]
     public function index(): Response
     {
@@ -113,51 +124,42 @@ final class GestionCompanyUsersController extends AbstractCompanyController
         $response->headers->set('Content-Type', 'text/csv');
         $response->headers->set('Content-Disposition', 'attachment; filename="users_template_utf8.csv"');
 
-        $csvData = "nom*,prénom*,email*,rôles (séparateur : '+'),id ".$this->getCompany()->getName().",métier,équipe\n";
+        $csvData = implode(',', $this->importColumns) . "\n";
 
         return $response->setContent($csvData);
     }
 
     #[Route('/gestion/company/users/csv/export', name: 'company_users_csv_export', methods: ['GET'])]
-    public function csvExport(WebUserRepository $webUserRepository): Response
+    public function csvExport(): Response
     {
         $response = new Response();
         $response->headers->set('Content-Type', 'text/csv');
         $response->headers->set('Content-Disposition', 'attachment; filename="users_utf8.csv"');
-
-        $csvData = "nom*,prénom*,email*,rôles (séparateur : '+'),id ".$this->getCompany()->getName().",métier,équipe\n";
-
-        $users = $webUserRepository->findBy(['company' => $this->getCompany(), 'displayed' => true]);
-        foreach ($users as $user) {
-            $id = $this->getCompany()->getConfig()->getAgtIdType() == 'company ' ? $user->getCompanyInternalID() : '';
-            $roles = implode('+', array_map(fn($role) => str_replace('ROLE_', '', $role), $user->getRoles()));
-            $csvData .= sprintf("%s,%s,%s,%s,%s\n",
-                $user->getLastName(),
-                $user->getFirstName(),
-                $user->getEmail(),
-                $roles,
-                $id,
-                $user->getJob() ?? '',
-                $user->getTeam() ?? ''
-            );
+        $csvData = implode(',', $this->importColumns) . "\n";
+        $userRows = $this->em->getConnection()->executeQuery(
+            "SELECT ".implode(',', array_keys($this->importColumns))." FROM web_user WHERE company_id = ? AND displayed = true",
+            [$this->getCompany()->getId()])->fetchAllAssociative();
+        foreach ($userRows as $row) {
+            $csvData .= implode(',', $row) . "\n";
         }
         return $response->setContent($csvData);
     }
 
     #[Route('/gestion/company/users/csv/import', name: 'company_users_csv_import', methods: ['POST'])]
-    public function csvImport(Request $request, EntityManagerInterface $em): Response
+    public function csvImport(Request $request, TokenStorageInterface $tokenStorage): Response
     {
+        $baseColumns = implode(',', array_keys($this->importColumns));
         $confirmImport = $request->request->get('confimImport', 'false') == 'true';
         $clearBeforeImport = $request->request->get('clearBeforeImport', 'false') == 'true';
         if ($confirmImport){
             $tableName = "_tmp_user_import_".$this->getCompany()->getId();
             $cid = $this->getCompany()->getId();
             if ($clearBeforeImport) {
-                $em->getConnection()->executeQuery("UPDATE web_user SET displayed = 0, can_connect=0 WHERE company_id = $cid");
+                $this->em->getConnection()->executeQuery("UPDATE web_user SET displayed = 0, can_connect=0 WHERE company_id = $cid");
             }
-            $em->getConnection()->executeQuery("INSERT INTO web_user
-                (last_name, first_name, email, company_id, company_internal_id, roles, displayed, can_connect, job, team)
-                SELECT last_name, first_name, email, $cid, company_internal_id, roles, true, true, job, team FROM $tableName
+            $this->em->getConnection()->executeQuery("INSERT INTO web_user
+                ($baseColumns, company_id, displayed, can_connect)
+                SELECT $baseColumns, $cid, true, true FROM $tableName
                 ON CONFLICT (" .  match($this->getCompany()->getConfig()->getAgtIdType()) {
                     'company' => "company_internal_id, company_id",
                     'email' => "email, company_id",
@@ -173,7 +175,11 @@ final class GestionCompanyUsersController extends AbstractCompanyController
                     job = EXCLUDED.job,
                     team = EXCLUDED.team
                     ;");
-            $em->getConnection()->executeQuery("DROP TABLE IF EXISTS $tableName");
+            $this->em->getConnection()->executeQuery("DROP TABLE IF EXISTS $tableName");
+
+            // Reauthenticate the user to refresh the token with new roles
+            $this->em->refresh($this->getUser());
+            $tokenStorage->setToken(new PostAuthenticationToken($this->getUser(), 'main', $this->getUser()->getRoles()));
 
             $this->addFlash('success', 'Users imported successfully.'); 
             return $this->redirectToRoute('app_gestion_company_users', [
@@ -199,56 +205,54 @@ final class GestionCompanyUsersController extends AbstractCompanyController
             // Skip header
             fgetcsv($handle);
             $tableName = "_tmp_user_import_".$this->getCompany()->getId();
-            $em->getConnection()->executeQuery("DROP TABLE IF EXISTS $tableName;");
-            $em->getConnection()->executeQuery("
+            $this->em->getConnection()->executeQuery("DROP TABLE IF EXISTS $tableName;");
+            $this->em->getConnection()->executeQuery("
                 CREATE TABLE $tableName (
                     last_name VARCHAR(64) NOT NULL,
                     first_name VARCHAR(64) NOT NULL,
                     email VARCHAR(255) NOT NULL,
-                    company_internal_id VARCHAR(255) NOT NULL,
+                    company_internal_id VARCHAR(255),
                     roles TEXT NOT NULL,
                     job VARCHAR(128),
                     team VARCHAR(128),
                     PRIMARY KEY (email)
             );");
-            $baseSql = "INSERT INTO $tableName (last_name, first_name, email, roles, company_internal_id, job, team) VALUES ";
+            $baseSql = "INSERT INTO $tableName ($baseColumns) VALUES ";
             $params = [];
             $i = 0;
-            while (($data = fgetcsv($handle)) !== false) {
-                if (count($data) < 4) {
+
+            $conv = array_flip(array_keys($this->importColumns));
+            while (($d = fgetcsv($handle)) !== false) {
+                if (count($d) < 3) {
                     continue; // Skip invalid rows
                 }
-                if (strlen(trim($data[4])) === 0) {
-                    $roles = ['ROLE_USER']; // Default role if none provided
-                }else{
-                    $roles = array_map(
-                        fn ($r) => 'ROLE_'.trim($r), 
-                        explode('+', $data[3])
-                    );
-                }
+                
                 $params = array_merge($params,[
-                    $data[0],
-                    $data[1],
-                    $data[2],
-                    implode(',', $roles),
-                    $data[4] ?? null,
-                    $data[5] ?? null,
-                    $data[6] ?? null
+                    $d[$conv['last_name']] ?? null,
+                    $d[$conv['first_name']] ?? null,
+                    $d[$conv['email']] ?? null,
+                    ($d[$conv['roles']]??false) ? str_replace([' ','+'], ['',','],$d[$conv['roles']]) : 'ROLE_USER',
+                    $d[$conv['company_internal_id']] ?? null,
+                    $d[$conv['job']] ?? null,
+                    $d[$conv['team']] ?? null,
                 ]);
                 $i += 1;
                 if ($i > 1000) {
-                    $selectors = implode(",",array_fill(0, $i, '(?, ?, ?, ?, ?, ?, ?)'));
-                    $em->getConnection()->executeQuery($baseSql . $selectors, $params);
+                    $selector = implode(",",array_fill(0, count($conv), '?'));
+                    $selectors = implode(",",array_fill(0, $i, "($selector)"));
+                    $this->em->getConnection()->executeQuery($baseSql . $selectors, $params);
                     $params = [];
                     $i = 0;
                 }
             }
-            $selectors = implode(",",array_fill(0, $i, '(?, ?, ?, ?, ?, ?, ?)'));
-            $em->getConnection()->executeQuery($baseSql . $selectors, $params);     
+            $selector = implode(",",array_fill(0, count($conv), '?'));
+            $selectors = implode(",",array_fill(0, $i, "($selector)"));
+            $this->em->getConnection()->executeQuery($baseSql . $selectors, $params);     
             fclose($handle);
+
             return $this->render('configuration/companyUsers/csv.html.twig', [
-                'total' => $em->getConnection()->fetchOne("SELECT COUNT(*) FROM $tableName"),   
-                'first100' => !$confirmImport ? $em->getConnection()->fetchAllAssociative("SELECT * FROM $tableName LIMIT 100") : null,                        
+                'total' => $this->em->getConnection()->fetchOne("SELECT COUNT(*) FROM $tableName"),   
+                'first100' => !$confirmImport ? $this->em->getConnection()->fetchAllAssociative("SELECT * FROM $tableName LIMIT 100") : null,                        
             ]);
         }
     }
