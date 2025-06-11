@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ORM\UniqueConstraint(name: '', columns: ['name', 'version', 'company_id'])]
 #[ORM\Entity(repositoryClass: Template360Repository::class)]
 class Template360
 {

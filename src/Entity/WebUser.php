@@ -3,7 +3,12 @@
 namespace App\Entity;
 
 use App\Abstraction\CompanyUserInterface;
+use App\Entity\Feedback360\Observation360;
+use App\Entity\Feedback360\Observer;
+use App\Entity\Feedback360\Observers;
 use App\Repository\WebUserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -53,6 +58,23 @@ class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterfac
 
     #[ORM\Column(length: 128, nullable: true)]
     private ?string $team = null;
+
+    /**
+     * @var Collection<int, Observation360>
+     */
+    #[ORM\OneToMany(targetEntity: Observation360::class, mappedBy: 'agent')]
+    private Collection $observation360s;
+
+    /**
+     * @var Collection<int, Observation360>
+     */
+    #[ORM\OneToMany(targetEntity: Observer::class, mappedBy: 'oberver')]
+    private Collection $oberveIn; 
+
+    public function __construct()
+    {
+        $this->observation360s = new ArrayCollection();
+    }
 
     public function getUserIdentifier(): string
     {
@@ -223,5 +245,43 @@ class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterfac
     {
         $this->team = $team;
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Observation360>
+     */
+    public function getObservation360s(): Collection
+    {
+        return $this->observation360s;
+    }
+
+    public function addObservation360(Observation360 $observation360): static
+    {
+        if (!$this->observation360s->contains($observation360)) {
+            $this->observation360s->add($observation360);
+            $observation360->setAgent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeObservation360(Observation360 $observation360): static
+    {
+        if ($this->observation360s->removeElement($observation360)) {
+            // set the owning side to null (unless already changed)
+            if ($observation360->getAgent() === $this) {
+                $observation360->setAgent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Observer>
+     */
+    public function getObserveIn(): Collection
+    {
+        return $this->oberveIn;
     }
 }

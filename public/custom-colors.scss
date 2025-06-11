@@ -21,3 +21,8 @@ $theme-colors: (
     "light":      $light,
     "dark":       $dark
 );
+
+
+.bg-primary, .btn-primary, bg-secondary, .btn-secondary {
+  color: white !important; // This ensures text is white on primary background
+}

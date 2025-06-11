@@ -16,10 +16,9 @@
             {% if campagnes is empty %}
                 <p>Aucune campagne trouvée.</p>
             {% else %}
-                <table class="table table-striped">
+                <table class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Nom</th>
                             <th>Date de début</th>
                             <th>Date de fin</th>
@@ -29,10 +28,10 @@
                     <tbody>
                         {% for campagne in campagnes %}
                             <tr>
-                                <td>{{ campagne.id }}</td>
-                                <td>{{ campagne.nom }}</td>
-                                <td>{{ campagne.dateDebut ? campagne.dateDebut|date('Y-m-d') : 'N/A' }}</td>
-                                <td>{{ campagne.dateFin ? campagne.dateFin|date('Y-m-d') : 'N/A' }}</td>
+                                <td><a href="{{path('app_campagne_manage_fdb360_edit', {'campagne' : campagne.id } )}}">{{ campagne.name }}</a></td>
+                                <td>{{ campagne.beginAt ? campagne.beginAt|date('d/m/Y') : '-' }}</td>
+                                <td>{{ campagne.endAt ? campagne.endAt|date('d/m/Y') : '-' }}</td>
+                                <td></td>
                             </tr>
                         {% endfor %}
                     </tbody>

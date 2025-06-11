@@ -71,3 +71,58 @@
 body{
     background-color: var(--bs-base) !important;
 }
+
+.step {
+    position: relative;
+    min-height: 1em;
+    color: gray;
+    .title {
+        line-height: 1.5em;
+        font-weight: bold;
+    }
+    .caption {
+        font-size: 0.8em;
+    }
+    .circle {
+        background: gray;
+        position: relative;
+        width: 1.5em;
+        height: 1.5em;
+        line-height: 1.5em;
+        border-radius: 100%;
+        color: #fff;
+        text-align: center;
+        box-shadow: 0 0 0 3px #fff;
+        z-index: 900;
+    }
+    .line {    
+        content: " ";
+        position: absolute;
+        top: 25px;
+        left: 11px;
+        height: 100%;
+        width: 2px;
+        background-color: var(--bs-primary);
+        z-index: 2;
+    }
+}
+.step:last-child .line {
+    display: none
+}
+.step + .step {
+    margin-top: 1.5em
+}
+.step > div:first-child {
+    position: static;
+    height: 0;
+}
+.step > div:not(:first-child) {
+    margin-left: 1.5em;
+    padding-left: 1em;
+}
+.step.step-active {
+    color: var(--bs-primary);
+}
+.step.step-active .circle {
+    background-color: var(--bs-primary);
+}

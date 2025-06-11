@@ -79,7 +79,7 @@ final class GestionCompanyUsersController extends AbstractCompanyController
         if (!$userUserAccessService->canEditUser($targetuser))
             throw $this->createAccessDeniedException('You do not have permission to edit this user');
 
-        $form = $this->createForm(WebUserType::class, $targetuser, );
+        $form = $this->createForm(WebUserType::class, $targetuser);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->em->persist($targetuser);

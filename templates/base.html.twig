@@ -24,17 +24,37 @@
 			{% include 'navbar.html.twig' %}
 		{% endblock %}
 		<div class="mt-2 w-100 d-flex flex-column align-items-center">
-			{% for msgType in ['error','warning','success','info'] %}
-				{% for message in app.flashes(msgType) %}
-					<div class="alert alert-{{msgType}} mb-2" role="alert">
-						{{ message }}
-					</div>
-				{% endfor %}
-			{% endfor %}
 			{% block flashMsg %} {% endblock %}
 		</div>
 		<div id="pageContent">
 			{% block body %}{% endblock %}
+		</div>
+		<div class="toast-container position-fixed bottom-0 end-0 p-3">
+			{% set types = {
+				'error': 'Erreur',
+				'warning': 'Attention',
+				'success': 'Succès',
+				'info': 'Information'
+			} %}
+			{% for msgType, msgLabel in types %}
+				{% for i,message in app.flashes(msgType) %}
+					<div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
+						<div class="toast-header">
+							<div class="rounded me-2 bg-{{msgType}}" style="width: 20px; height: 20px;"></div>
+							<strong class="me-auto">{{ msgLabel }}</strong>
+							<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+						</div>
+						<div class="toast-body">
+							{{ message }}
+						</div>
+					</div>
+					<script>
+						$('.toast').delay(3000).fadeOut('slow', function() {
+							$(this).remove();
+						});
+					</script>
+				{% endfor %}
+			{% endfor %}
 		</div>
 	</body>
 	<script>
@@ -42,6 +62,11 @@
 			if(e.detail.xhr.status >= 400){
 				$('#pageContent').html(e.detail.xhr.response);
 			}
+		});
+		$(document).ready(function() {
+			$(document).on('click', '.btn', function(e) {
+				$(e.target).html('<span class="px-4"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></span>');
+			});
 		});
 	</script>
 </html>

@@ -8,7 +8,7 @@
             <h1 class="mb-4">Selectionnez le type de campagne à créer</h1>
             {% if is_granted('ROLE_T_360_MAN') %}
             <div class="d-flex gap-4">
-                <a href="{{ path('app_campagne_manage_fdb360') }}" class="btn btn-primary d-flex align-items-center justify-content-center col-2">Feedback 360</a>
+                <a href="{{ path('app_campagne_manage_fdb360_new') }}" class="btn btn-primary d-flex align-items-center justify-content-center col-2">Feedback 360</a>
                 <div class="col">
                     Une campagne Feedback 360 permet de collecter des retours d'expérience annonyme
                     de la part de différents acteurs (collègues, managers, etc.) sur un collaborateur.
