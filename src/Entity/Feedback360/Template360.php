@@ -54,12 +54,19 @@ class Template360
     #[ORM\Column(options: ['default' => false])]
     private bool $useQuestionTheme = false;
 
+    /**
+     * @var Collection<int, CampaignFeedback360>
+     */
+    #[ORM\OneToMany(targetEntity: CampaignFeedback360::class, mappedBy: 'baseTemplate')]
+    private Collection $campaignFeedback360s;
+
     // ======= generated ========
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
         $this->questions = new ArrayCollection();
+        $this->campaignFeedback360s = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -213,6 +220,36 @@ class Template360
     public function setUseQuestionTheme(bool $useQuestionTheme): static
     {
         $this->useQuestionTheme = $useQuestionTheme;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CampaignFeedback360>
+     */
+    public function getCampaignFeedback360s(): Collection
+    {
+        return $this->campaignFeedback360s;
+    }
+
+    public function addCampaignFeedback360(CampaignFeedback360 $campaignFeedback360): static
+    {
+        if (!$this->campaignFeedback360s->contains($campaignFeedback360)) {
+            $this->campaignFeedback360s->add($campaignFeedback360);
+            $campaignFeedback360->setBaseTemplate($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCampaignFeedback360(CampaignFeedback360 $campaignFeedback360): static
+    {
+        if ($this->campaignFeedback360s->removeElement($campaignFeedback360)) {
+            // set the owning side to null (unless already changed)
+            if ($campaignFeedback360->getBaseTemplate() === $this) {
+                $campaignFeedback360->setBaseTemplate(null);
+            }
+        }
 
         return $this;
     }

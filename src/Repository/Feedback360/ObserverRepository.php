@@ -4,6 +4,7 @@ namespace App\Repository\Feedback360;
 
 use App\Entity\Feedback360\Observer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -14,6 +15,23 @@ class ObserverRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Observer::class);
+    }
+
+    public function countsByObsForCampaign(int $campaignId): array
+    {
+        $raw = $this->createQueryBuilder('o')
+            ->select(['obs.id', 'COUNT(o.id) AS count'])
+            ->innerJoin('o.observation', 'obs')
+            ->andWhere('obs.campaign = :campaignId')
+            ->setParameter('campaignId', $campaignId)
+            ->groupBy('obs.id')
+            ->getQuery()
+            ->getArrayResult();
+        $counts = [];
+        foreach ($raw as $row) {
+            $counts[$row['id']] = $row['count'];
+        }
+        return $counts;
     }
 
 //    /**

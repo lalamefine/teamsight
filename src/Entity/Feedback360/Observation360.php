@@ -18,7 +18,7 @@ class Observation360
 
     #[ORM\ManyToOne(inversedBy: 'observation360s')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?WebUser $agent = null;
+    private WebUser $agent;
 
     #[ORM\ManyToOne(inversedBy: 'observation360s')]
     private ?CampaignFeedback360 $campaign = null;
@@ -44,8 +44,10 @@ class Observation360
     #[ORM\OneToMany(targetEntity: Observer::class, mappedBy: 'observation', orphanRemoval: true)]
     private Collection $observers;
 
-    public function __construct()
+    public function __construct(?CampaignFeedback360 $campaign, WebUser $agent)
     {
+        $this->agent = $agent;
+        $this->campaign = $campaign;
         $this->observers = new ArrayCollection();
     }
 
@@ -83,6 +85,18 @@ class Observation360
         return $this->state;
     }
 
+    public function stateDisplayed(): string
+    {
+        return match ($this->state) {
+            self::STATE_CREATED => 'En construction',
+            self::STATE_READY => 'Panel prêt',
+            self::STATE_OPEN => 'Ouverte',
+            self::STATE_CLOSED => 'Fermée',
+            self::STATE_VALIDATED => 'Rapport Validé',
+            default => 'Inconnu',
+        };
+    }
+
     public function setState(string $state): static
     {
         $this->state = $state;
@@ -91,7 +105,7 @@ class Observation360
     }
 
     /**
-     * @return Collection<int, Observers>
+     * @return Collection<int, Observer>
      */
     public function getObservers(): Collection
     {

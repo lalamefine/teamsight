@@ -83,7 +83,10 @@ class CampaignFeedback360 implements CampaignInterface
      * @var Collection<int, Observation360>
      */
     #[ORM\OneToMany(targetEntity: Observation360::class, mappedBy: 'campaign')]
-    private Collection $observation360s; 
+    private Collection $observation360s;
+
+    #[ORM\ManyToOne(inversedBy: 'campaignFeedback360s')]
+    private ?template360 $baseTemplate = null; 
 
     public function __construct()
     {
@@ -422,6 +425,18 @@ class CampaignFeedback360 implements CampaignInterface
                 $observation360->setCampaign(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getBaseTemplate(): ?template360
+    {
+        return $this->baseTemplate;
+    }
+
+    public function setBaseTemplate(?template360 $baseTemplate): static
+    {
+        $this->baseTemplate = $baseTemplate;
 
         return $this;
     }

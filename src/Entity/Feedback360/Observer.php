@@ -16,11 +16,11 @@ class Observer
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'observer')]
+    #[ORM\ManyToOne(inversedBy: 'observers')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Observation360 $observation = null;
 
-    #[ORM\ManyToOne(inversedBy: 'oberveIn')]
+    #[ORM\ManyToOne(inversedBy: 'observeIn')]
     #[ORM\JoinColumn(nullable: false)]
     private ?WebUser $agent = null;
 
@@ -36,8 +36,15 @@ class Observer
     #[ORM\OneToMany(targetEntity: Answer::class, mappedBy: 'by', orphanRemoval: true)]
     private Collection $answers;
 
-    public function __construct()
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ObsProfile $profile = null;
+
+    public function __construct(Observation360 $observation, WebUser $agent, ObsProfile $profile)
     {
+        $this->observation = $observation;
+        $this->agent = $agent;
+        $this->profile = $profile;
         $this->answers = new ArrayCollection();
     }
 
@@ -120,6 +127,18 @@ class Observer
                 $answer->setBy(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getProfile(): ?ObsProfile
+    {
+        return $this->profile;
+    }
+
+    public function setProfile(?ObsProfile $profile): static
+    {
+        $this->profile = $profile;
 
         return $this;
     }

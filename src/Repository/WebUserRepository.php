@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Company;
 use App\Entity\WebUser;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -14,6 +15,30 @@ class WebUserRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, WebUser::class);
+    }
+
+    public function search(Company $company, string $search, int $maxResults = 100) : array
+    {
+        $qb = $this->createQueryBuilder('w')
+            ->andWhere('w.company = :company')
+            ->setParameter('company', $company)
+            ->andWhere('w.email LIKE :search OR CONCAT(w.firstName, \' \', w.lastName) LIKE :search OR CONCAT(w.lastName, \' \', w.firstName) LIKE :search OR w.team LIKE :search')    
+            ->setParameter('search', '%' . $search . '%')
+            ->orderBy('w.team,w.lastName,w.firstName', 'ASC')
+            ->setMaxResults($maxResults);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findByIdIn(Company $company, array $ids): array
+    {
+        return $this->createQueryBuilder('w')
+            ->andWhere('w.company = :company')
+            ->setParameter('company', $company)
+            ->andWhere('w.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
     }
 
     //    /**

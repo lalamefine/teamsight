@@ -64,7 +64,7 @@
 			}
 		});
 		$(document).ready(function() {
-			$(document).on('click', '.btn', function(e) {
+			$(document).on('click', '.btn:not(.no-wheel)', function(e) {
 				$(e.target).html('<span class="px-4"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></span>');
 			});
 		});

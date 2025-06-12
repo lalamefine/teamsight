@@ -1,0 +1,25 @@
+<form class="modal-content" action="{{ path('campagne_manage_add_user', {'campagne': campagne.id}) }}" method="POST">
+    <div class="modal-header">
+        <h5 class="modal-title">Recherche de membre</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <input type="text" class="form-control" placeholder="Rechercher par nom, email, id, équipe" aria-label="Rechercher" name="search"
+            hx-get="{{ path('campagne_manage_select_user', {'campagne': campagne.id}) }}"
+            hx-target="#searchResults" hx-swap="innerHTML" 
+            hx-trigger="keyup changed delay:500ms" autocomplete="off"
+            hx-indicator="#userModalLoading"
+        >
+        <input type="hidden" class="form-control mt-2" name="campagneId" value="{{ campagne.id }}" aria-label="Campagne ID">
+        <div class="mt-3" id="searchResults">
+            <!-- Results will be populated here -->
+        </div>
+        <div class="spinner-border text-primary mt-2 htmx-indicator" id="userModalLoading" role="status">
+            <span class="d-none">Loading...</span>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+    </div>
+</form>

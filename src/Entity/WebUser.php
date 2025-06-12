@@ -66,10 +66,10 @@ class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterfac
     private Collection $observation360s;
 
     /**
-     * @var Collection<int, Observation360>
+     * @var Collection<int, Observer>
      */
-    #[ORM\OneToMany(targetEntity: Observer::class, mappedBy: 'oberver')]
-    private Collection $oberveIn; 
+    #[ORM\OneToMany(targetEntity: Observer::class, mappedBy: 'agent')]
+    private Collection $observeIn; 
 
     public function __construct()
     {
@@ -278,10 +278,10 @@ class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterfac
     }
 
     /**
-     * @return Collection<int, Observer>
+     * @return Collection<int, Observation360>
      */
     public function getObserveIn(): Collection
     {
-        return $this->oberveIn;
+        return $this->observeIn;
     }
 }

@@ -29,7 +29,7 @@
         </div>
         <div>
             <div class="title">Ajout des observés</div>
-            <div class="caption">This is description of second step.</div>
+            {# <div class="caption">This is description of second step.</div> #}
         </div>
     </div>
     {% if campagne.haveFeature('panel_evalueProposal') %}
@@ -95,10 +95,8 @@
             </div><div class="line"></div>
         </div>
         <div>
-            <div class="title">Démarage de la campagne</div>
-
-            
-            <div class="caption">Some text about Third step. </div>
+            <div class="title">Début de la campagne</div>
+            {# <div class="caption">Some text about Third step. </div> #}
         </div>
     </div>
     <div class="step {{ campagne.currentState == 'answ_closed' ? 'step-active' : '' }}">

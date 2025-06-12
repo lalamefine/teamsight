@@ -1,0 +1,39 @@
+
+{% if campagne.observation360s|length == 0 %}
+    <p>Aucune observation en préparation.</p>
+{% else %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Agent</th>
+                <th>Panel</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obs in campagne.observation360s %}
+                <tr>
+                    <td>{{ obs.agent.username }} {% if obs.agent.companyInternalId %} ({{ obs.agent.companyInternalId }}){% endif %}</td>
+                    <td> {{ panelsizes[obs.id] ?? 0 }} </td>
+                    <td>
+                        {{ obs.stateDisplayed }}
+                    </td>
+                    <td>
+                        <a class="btn btn-primary" target="_blank" href="{{ path('observation_panel_edit', {'id': obs.id}) }}">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <button type="button" class="btn btn-danger no-wheel"
+                            hx-delete="{{ path('observation_delete', {'id': obs.id}) }}"
+                            hx-confirm="Êtes-vous sûr de vouloir supprimer cette observation ?"
+                            hx-target="#campaignContent" hx-swap="innerHTML">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="2">Aucune observation trouvée.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
