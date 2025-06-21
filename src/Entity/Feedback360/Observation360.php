@@ -104,6 +104,26 @@ class Observation360
         return $this;
     }
 
+    public function isStateOrAfter(string $state): bool
+    {
+        return array_search($this->state, self::STATES) >= array_search($state, self::STATES);
+    }
+
+    public function isStateOrBefore(string $state): bool
+    {
+        return array_search($this->state, self::STATES) <= array_search($state, self::STATES);
+    }
+    public function isStateAfter(string $state): bool
+    {
+        return array_search($this->state, self::STATES) > array_search($state, self::STATES);
+    }
+
+    public function isStateBefore(string $state): bool
+    {
+        return array_search($this->state, self::STATES) < array_search($state, self::STATES);
+    }
+
+
     /**
      * @return Collection<int, Observer>
      */

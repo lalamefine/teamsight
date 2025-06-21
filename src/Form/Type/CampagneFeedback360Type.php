@@ -39,7 +39,7 @@ class CampagneFeedback360Type extends AbstractType
             ])
             ->add('message', TextareaType::class, [
                 'label' => 'Message présenté en-tête des questionnaires',
-                'attr' => ['rows' => 3],
+                'attr' => ['rows' => 3, 'readonly' => $options['data']?->isStateOrAfter(CampaignFeedback360::STATE_ANS_OPEN) ?? false],
                 'required' => true
             ]);
             // ->add('beginAt', DateType::class, [
@@ -72,7 +72,7 @@ class CampagneFeedback360Type extends AbstractType
 
         $builder->add('submit', SubmitType::class, [
                 'label' => 'Enregistrer',
-                'attr' => ['class' => 'btn btn-primary float-end'],
+                'attr' => ['class' => 'btn btn-primary float-end wheel'],
             ]);
     }
 }

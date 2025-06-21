@@ -225,6 +225,16 @@ class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterfac
         return $this;
     }
 
+    public function getFullName(): string
+    {
+        return $this->firstName . ' ' . $this->lastName;
+    }
+
+    public function getName(): string
+    {
+        return $this->getFullName();
+    }
+
     public function getJob(): ?string
     {
         return $this->job;

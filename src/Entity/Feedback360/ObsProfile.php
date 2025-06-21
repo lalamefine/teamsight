@@ -41,6 +41,9 @@ class ObsProfile
     #[ORM\ManyToMany(targetEntity: Question360::class, mappedBy: 'profiles')]
     private Collection $question360s;
 
+    #[ORM\Column(options: ['default' => true])]
+    private bool $selectableManually = true;
+
     public function __construct(string $name = '', bool $anonymous = true, ?Company $company = null, bool $canValidateReport = false, bool $editable = true, bool $canSeeValidatedReport = false)
     {
         $this->name = $name;
@@ -152,6 +155,18 @@ class ObsProfile
         if ($this->question360s->removeElement($question360)) {
             $question360->removeProfile($this);
         }
+
+        return $this;
+    }
+
+    public function isSelectableManually(): ?bool
+    {
+        return $this->selectableManually;
+    }
+
+    public function setSelectableManually(bool $selectableManually): static
+    {
+        $this->selectableManually = $selectableManually;
 
         return $this;
     }

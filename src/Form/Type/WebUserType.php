@@ -84,6 +84,7 @@ class WebUserType extends AbstractType
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Enregistrer',
+                'attr' => ['class' => 'btn btn-primary mt-3 wheel'],
             ]);
     }
 }

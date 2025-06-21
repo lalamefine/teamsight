@@ -65,6 +65,11 @@ class Observer
         return $this;
     }
 
+    public function getName(): string
+    {
+        return $this->agent->getFullName();
+    }
+
     public function getAgent(): ?WebUser
     {
         return $this->agent;

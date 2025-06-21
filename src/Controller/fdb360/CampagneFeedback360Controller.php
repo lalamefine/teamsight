@@ -66,7 +66,7 @@ final class CampagneFeedback360Controller extends AbstractCompanyController
         if($request->query->has('search')) {
             $search = $request->query->get('search', '');
             $users = $webUserRepository->search($this->getCompany(), $search);
-            return $this->render('campagne/fdb360/userSearch.html.twig', [
+            return $this->render('generic/userSearch.html.twig', [
                 'webusers' => $users,
             ]);
         }

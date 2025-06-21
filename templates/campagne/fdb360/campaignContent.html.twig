@@ -6,7 +6,7 @@
         <thead>
             <tr>
                 <th>Agent</th>
-                <th>Panel</th>
+                <th>Taille panel</th>
                 <th>Statut</th>
                 <th>Actions</th>
             </tr>
@@ -23,7 +23,7 @@
                         <a class="btn btn-primary" target="_blank" href="{{ path('observation_panel_edit', {'id': obs.id}) }}">
                             <i class="bi bi-pencil"></i>
                         </a>
-                        <button type="button" class="btn btn-danger no-wheel"
+                        <button type="button" class="btn btn-danger"
                             hx-delete="{{ path('observation_delete', {'id': obs.id}) }}"
                             hx-confirm="Êtes-vous sûr de vouloir supprimer cette observation ?"
                             hx-target="#campaignContent" hx-swap="innerHTML">
