@@ -74,8 +74,8 @@ class Company
     public function initObsProfiles(): void
     {
         $this->obsProfiles = new ArrayCollection([
-            new ObsProfile('Observé', false, $this, false, false, true),
-            new ObsProfile('Hierarchie', false, $this, true, false, true),
+            new ObsProfile('Observé', false, $this, false, false, true, false),
+            new ObsProfile('Hierarchie', false, $this, true, false, true, true),
         ]);
     }
 

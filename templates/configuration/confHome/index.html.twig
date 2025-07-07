@@ -6,54 +6,38 @@
 <div class="container">
     <div class="bg-white shadow p-4 rounded w-100" >
         <h1>Configuration</h1>
-        <ul>
+        <div id="configList" class="list-group">
             {% if is_granted('ROLE_SUPER_ADMIN') %}
-            <li>
-                <a href="{{ path('admin') }}" hx-boost="false">Dashboard super-administrateur</a>
-            </li>
+                <a class="list-group-item list-group-item-action list-group-item-secondary py-3" href="{{ path('admin') }}" hx-boost="false">Dashboard super-administrateur</a>
             {% endif %}
             {% if is_granted('ROLE_ENT_ADMIN') %}
-            <li>
-                <a href="{{ path('app_conf_company') }}">Configuration Plateforme</a>
-            </li>
-            <li>
-                <a href="{{ path('app_conf_company_campaigns') }}">Configuration Campagnes</a>
-            </li>
+                <a class="list-group-item list-group-item-action list-group-item-secondary py-3" href="{{ path('app_conf_company') }}">Configuration Plateforme</a>
+                <a class="list-group-item list-group-item-action list-group-item-secondary py-3" href="{{ path('app_conf_company_campaigns') }}">Configuration Campagnes</a>
             {% endif %}
             {% if is_granted('ROLE_ENT_USER_MANAGER') %}
-            <li>
-                <a href="{{ path('app_gestion_company_users') }}">Gestion Utilisateurs</a>
-            </li>
+                <a class="list-group-item list-group-item-action list-group-item-secondary py-3" href="{{ path('app_gestion_company_users') }}">Gestion Utilisateurs</a>
             {% endif %}
             {% if is_granted('ROLE_T_360_MAN') %}
                 {% if userCompanyConfig.questFdb360 %}
-                    <li>
-                        <a href="{{ path('app_conf_templates_360_list') }}">Templates Feedback 360</a>
-                    </li>
+                    <a class="list-group-item list-group-item-action list-group-item-secondary py-3" href="{{ path('app_conf_templates_360_list') }}">Templates Feedback 360</a>
                 {% endif %}
             {% endif %}
             {% if is_granted('ROLE_T_EA_MAN') %}
                 {% if userCompanyConfig.questEA %}
-                    <li>
-                        <a href="{{ path('app_conf_templates_ea') }}">Templates Entretien Annuel</a>
-                    </li>
+                    <a class="list-group-item list-group-item-action list-group-item-secondary py-3" href="{{ path('app_conf_templates_ea') }}">Templates Entretien Annuel</a>
                 {% endif %}
             {% endif %}
             {% if is_granted('ROLE_T_REFCOM_MAN') %}
                 {% if userCompanyConfig.questComp %}
-                    <li>
-                        <a href="{{ path('app_conf_referentiel_comp') }}">Référentiel de compétences</a>
-                    </li>
+                    <a class="list-group-item list-group-item-action list-group-item-secondary py-3" href="{{ path('app_conf_referentiel_comp') }}">Référentiel de compétences</a>
                 {% endif %}
             {% endif %}
             {% if is_granted('ROLE_T_ENSURV_MAN') %}
                 {% if userCompanyConfig.questPerc %}
-                    <li>
-                        <a href="{{ path('app_conf_templates_survey') }}">Questionnaires perception de l'entreprise</a>
-                    </li>
+                    <a class="list-group-item list-group-item-action list-group-item-secondary py-3" href="{{ path('app_conf_templates_survey') }}">Questionnaires perception de l'entreprise</a>
                 {% endif %}
             {% endif %}
-        </ul>
+        </div>
     </div>
 </div>
 {% endblock %}

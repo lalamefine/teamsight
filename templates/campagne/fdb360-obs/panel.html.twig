@@ -3,58 +3,60 @@
 
 {% block body %}
     <div class="container pt-3">
-        <h4>Gestion du panel pour l'observation de {{observation.agent.name}}</h4>
-        <div class="d-flex justify-content-between mb-3">
-            {# <a href="{{ path('app_campagne_manage_fdb360_edit', {'campagne': observation.campaign.id}) }}" class="btn btn-sm btn-secondary mb-3">
-                <i class="bi bi-arrow-left"></i> Retour à la campagne
-            </a> #}
-            {% if observation.isStateBefore('closed') %}
-                <button type="button" class="btn btn-sm btn-primary"
-                        data-bs-toggle="modal" data-bs-target="#modalContainer"
-                        hx-get="{{ path('observation_add_observer_modal', {'id': observation.id}) }}"
-                        hx-target="#modalContent" hx-swap="innerHTML">
-                    <i class="bi bi-plus"></i> Ajouter un observateur
-                </button>
-            {% else %}
-                <button type="button" class="btn btn-sm btn-secondary" disabled>
-                    <i class="bi bi-lock"></i> Observation clôturée
-                </button>
-            {% endif %}
-        </div>
-        <div class="rounded p-2 bg-white shadow" hx-confirm="Etes vous sur ?" hx-target="closest .obsRow" hx-swap="outerHTML swap:0.5s">
-            <div class="obsRow p-2 d-flex align-items-center">
-                <b class="col-6">Nom de l'observateur</b>
-                <b class="col">Profil</b>
-                <b class="col"></b>
+        <div class="rounded p-2 bg-white shadow">
+            <h4 class="p-2">Gestion du panel pour l'observation de {{observation.agent.name}}</h4>
+            <div class="d-flex justify-content-between mb-2 ms-2">
+                {# <a href="{{ path('app_campagne_manage_fdb360_edit', {'campagne': observation.campaign.id}) }}" class="btn btn-sm btn-secondary mb-3">
+                    <i class="bi bi-arrow-left"></i> Retour à la campagne
+                </a> #}
+                {% if observation.isStateBefore('closed') %}
+                    <button type="button" class="btn btn-sm btn-primary"
+                            data-bs-toggle="modal" data-bs-target="#modalContainer"
+                            hx-get="{{ path('observation_add_observer_modal', {'id': observation.id}) }}"
+                            hx-target="#modalContent" hx-swap="innerHTML">
+                        <i class="bi bi-plus"></i> Ajouter un observateur
+                    </button>
+                {% else %}
+                    <button type="button" class="btn btn-sm btn-secondary" disabled>
+                        <i class="bi bi-lock"></i> Observation clôturée
+                    </button>
+                {% endif %}
             </div>
-            {% for observer in observation.observers %}
-                <div class="obsRow p-2 m-1 d-flex align-items-center ">
-                    <div class="col-6">{{ observer.name }}</div>
-                    <div class="col">
-                        {{observer.profile.name}}
-                    </div>
-                    <div class="col d-flex">
-                        {% if observer.agent != observation.agent %}
-                            {% if observer.startedAt is null %}
-                                <button class="btn btn-sm btn-danger" hx-delete="{{ path('observation_remove_observer', {'id': observer.id}) }}">
-                                    <i class="bi bi-trash"></i> Retirer de l'observation
-                                </button>
+            <div hx-confirm="Etes vous sur ?" hx-target="closest .obsRow" hx-swap="outerHTML swap:0.5s">
+                <div class="obsRow p-2 d-flex align-items-center">
+                    <b class="col-6">Nom de l'observateur</b>
+                    <b class="col">Profil</b>
+                    <b class="col"></b>
+                </div>
+                {% for observer in observation.observers %}
+                    <div class="obsRow p-2 m-1 d-flex align-items-center ">
+                        <div class="col-6">{{ observer.name }}</div>
+                        <div class="col">
+                            {{observer.profile.name}}
+                        </div>
+                        <div class="col d-flex">
+                            {% if observer.agent != observation.agent %}
+                                {% if observer.startedAt is null %}
+                                    <button class="btn btn-sm btn-danger" hx-delete="{{ path('observation_remove_observer', {'id': observer.id}) }}">
+                                        <i class="bi bi-trash"></i> Retirer
+                                    </button>
+                                {% else %}
+                                    <button class="btn btn-sm btn-grey" disabled>
+                                        Observation en cours
+                                    </button>
+                                {% endif %}
                             {% else %}
                                 <button class="btn btn-sm btn-grey" disabled>
-                                    Observation en cours
+                                <i class="bi bi-lock"></i>
+                                    Auto-évaluation
                                 </button>
                             {% endif %}
-                        {% else %}
-                            <button class="btn btn-sm btn-grey" disabled>
-                            <i class="bi bi-lock"></i>
-                                Auto-évaluation
-                            </button>
-                        {% endif %}
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
+                {% endfor %}
+            </div>
 
+        </div>
     </div>
     <!-- Modal for adding observers -->
     <div id="modalContainer" class="modal fade modal-xl" 

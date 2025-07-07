@@ -26,7 +26,7 @@ final class GestionCompanyUsersController extends AbstractCompanyController
         'company_internal_id' => 'Identifiant d\'entreprise',
         'job' => 'Métier',
         'team' => 'Équipe',
-    ]; 
+    ];
 
     #[Route('/gestion/company/users', name: 'app_gestion_company_users')]
     public function index(): Response

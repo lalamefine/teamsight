@@ -41,7 +41,7 @@ final class Obsevation360Controller extends AbstractCompanyController
         }
         $this->em->remove($observer);
         $this->em->flush();
-        return new Response('', Response::HTTP_NO_CONTENT);
+        return new Response('');
     }
 
     #[Route('/obsevation360/{id}/observers/add/modal', name: 'observation_add_observer_modal', methods: ['GET'])]
@@ -75,20 +75,23 @@ final class Obsevation360Controller extends AbstractCompanyController
             $profileId = $request->request->get('profileId');
             $profile = $obsProfileRepository->find($profileId);
             if (!$profile) {
-                $this->addFlash('error', 'Profile not found.');
+                $this->addFlash('error', 'Profile non trouvé.');
                 return $this->redirectToRoute('observation_panel_edit', ['id' => $observation360->getId()]);
             }
             if($profile->getCompany() !== $this->getCompany()) {
-                $this->addFlash('error', 'You cannot use this profile for this observation.');
+                $this->addFlash('error', 'Vous ne pouvez pas utilliser ce profil pour cette observation.');
                 return $this->redirectToRoute('observation_panel_edit', ['id' => $observation360->getId()]);
             }
 
             foreach ($users as $user) {
+                if ($observation360->hasObserver($user)) {
+                    $this->addFlash('error', "L'utillisateur : " . $user->getFullName() . ' est déjà associé à cette observation.');
+                    continue;
+                }
                 $observer = new Observer($observation360, $user, $profile);
                 $observation360->addObserver($observer);
                 $this->em->persist($observer);
                 $this->em->flush();
-                $this->addFlash('success', 'Observer added successfully: ' . $user->getFullName());
             }
         }
 

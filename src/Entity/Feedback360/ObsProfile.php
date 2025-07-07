@@ -44,7 +44,11 @@ class ObsProfile
     #[ORM\Column(options: ['default' => true])]
     private bool $selectableManually = true;
 
-    public function __construct(string $name = '', bool $anonymous = true, ?Company $company = null, bool $canValidateReport = false, bool $editable = true, bool $canSeeValidatedReport = false)
+    public function __construct(string $name = '', bool $anonymous = true, 
+        ?Company $company = null, bool $canValidateReport = false, 
+        bool $editable = true, bool $canSeeValidatedReport = false,
+        bool $selectableManually = true
+    )
     {
         $this->name = $name;
         $this->anonymous = $anonymous;
@@ -52,6 +56,7 @@ class ObsProfile
         $this->editable = $editable;
         $this->canSeeValidatedReport = $canSeeValidatedReport;
         $this->company = $company;
+        $this->selectableManually = $selectableManually;
         $this->question360s = new ArrayCollection();
     }
 

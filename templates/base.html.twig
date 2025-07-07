@@ -36,11 +36,17 @@
 				'success': 'Succès',
 				'info': 'Information'
 			} %}
+			{% set typesColors = {
+				'error': 'danger',
+				'warning': 'warning',
+				'success': 'success',
+				'info': 'info'
+			} %}
 			{% for msgType, msgLabel in types %}
 				{% for i,message in app.flashes(msgType) %}
 					<div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
 						<div class="toast-header">
-							<div class="rounded me-2 bg-{{msgType}}" style="width: 20px; height: 20px;"></div>
+							<div class="rounded me-2 bg-{{typesColors[msgType]}}" style="width: 20px; height: 20px;"></div>
 							<strong class="me-auto">{{ msgLabel }}</strong>
 							<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
 						</div>

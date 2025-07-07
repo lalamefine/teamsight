@@ -49,9 +49,18 @@ class WebUserType extends AbstractType
                 'required' => false,
             ]);
         }
+        $builder
+            ->add('job', TextType::class, [
+                'label' => 'Métier/Poste',
+                'required' => false,
+            ])
+            ->add('team', TextType::class, [
+                'label' => 'Équipe',
+                'required' => false,
+            ]);
         $availableRoles = [
-            "ROLE_ENT_ADMIN" => "Administrateur de l'entreprise",
-            "ROLE_ENT_USER_MANAGER" => "Gestionnaire des utilisateurs de l'entreprise",
+            "ROLE_ENT_ADMIN" => "Administrateur général",
+            "ROLE_ENT_USER_MANAGER" => "Gestionnaire des utilisateurs",
         ];
         if($this->forCompany->getConfig()->isQuestPerc()) {
             $availableRoles["ROLE_T_ENSURV_MAN"] = "Gestion module sondage";

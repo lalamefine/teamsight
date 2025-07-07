@@ -8,6 +8,7 @@
                     Ajouter un utilisateur
                 {% endif %}
             </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
             {{ form(form, {'action': path('app_gestion_company_users_edit', {'userid': targetuser.id ?? 'new' })}) }}

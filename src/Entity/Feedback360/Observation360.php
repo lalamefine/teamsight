@@ -104,6 +104,16 @@ class Observation360
         return $this;
     }
 
+    public function hasObserver(WebUser $user): bool
+    {
+        foreach ($this->observers as $observer) {
+            if ($observer->getAgent() === $user) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function isStateOrAfter(string $state): bool
     {
         return array_search($this->state, self::STATES) >= array_search($state, self::STATES);
