@@ -48,16 +48,74 @@ class EasyAdminDashBoardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        // Automatically yield MenuItems for all entities in App\Entity namespace
-        $entityDir = $this->getParameter('kernel.project_dir') . '/src/Entity';
+        // yield MenuItem::dashboard('Dashboard', 'fa fa-home');
+        
+        // Structure des entités par namespace/groupe logique
+        $entityGroups = [];
+        
+        $entityDir = $this->getParameter('kernel.project_dir') . '/src/Controller/Admin';
         foreach (scandir($entityDir) as $file) {
             if (preg_match('/^([A-Za-z0-9_]+)\.php$/', $file, $matches)) {
-                $className = 'App\\Entity\\' . $matches[1];
-                $AdminControllerClassName = 'App\\Controller\\Admin\\' . $matches[1] . 'CrudController';
-                if (class_exists($className) && class_exists($AdminControllerClassName)) {
-                    yield MenuItem::linkToCrud($matches[1], 'fas fa-database', $className);
+                $AdminControllerClassName = 'App\\Controller\\Admin\\' . $matches[1];
+                $reflexionClass = new \ReflectionClass($AdminControllerClassName);
+                if($reflexionClass->hasMethod('getEntityFqcn')) {
+                    $method = $reflexionClass->getMethod('getEntityFqcn');
+                    if($method->isStatic() && $method->isPublic()) {
+                        $className = $method->invoke(null);
+                        if (class_exists($className)) {
+                            // Obtenir le nom court de la classe
+                            $entityParts = explode('\\', $className);
+                            $entityName = array_pop($entityParts);
+                            
+                            // Déterminer le groupe (peut être basé sur le namespace ou une logique métier)
+                            $group = $this->determineEntityGroup($className, $entityName);
+                            
+                            // Ajouter l'entité au groupe approprié
+                            if (!isset($entityGroups[$group])) {
+                                $entityGroups[$group] = [];
+                            }
+                            $entityGroups[$group][] = [
+                                'name' => $entityName,
+                                'class' => $className
+                            ];
+                        }
+                    }
                 }
             }
         }
+        
+        // Générer les sections et sous-menus basés sur les groupes
+        foreach ($entityGroups as $groupName => $entities) {
+            if(count($entities) === 1) {
+                $entity = $entities[0];
+                yield MenuItem::linkToCrud($entity['name'], 'fas fa-database', $entity['class']);
+                continue;
+            }else{
+                $subMenu = MenuItem::subMenu($groupName, 'fas fa-folder');
+                $items = [];
+                foreach ($entities as $entity) {
+                    $items[] = MenuItem::linkToCrud($entity['name'], 'fas fa-database', $entity['class']);
+                }
+                $subMenu->setSubItems($items);
+                yield $subMenu;
+
+            }
+        }
+    }
+
+    /**
+     * Détermine le groupe logique d'une entité
+     */
+    private function determineEntityGroup(string $className, string $entityName): string
+    {
+        $parts = explode('\\', $className);
+        if (count($parts) >= 3) {
+            $moduleNamespace = $parts[2] ?? ''; // Par exemple, le 3ème segment du namespace
+            if (!empty($moduleNamespace)) {
+                return $moduleNamespace;
+            }
+        }
+        // Groupe par défaut
+        return 'Autres';
     }
 }

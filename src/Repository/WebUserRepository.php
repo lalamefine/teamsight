@@ -22,8 +22,8 @@ class WebUserRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('w')
             ->andWhere('w.company = :company')
             ->setParameter('company', $company)
-            ->andWhere('w.email LIKE :search OR CONCAT(w.firstName, \' \', w.lastName) LIKE :search OR CONCAT(w.lastName, \' \', w.firstName) LIKE :search OR w.team LIKE :search')    
-            ->setParameter('search', '%' . $search . '%')
+            ->andWhere('w.email LIKE :search OR UPPER(CONCAT(w.firstName, \' \', w.lastName)) LIKE :search OR UPPER(CONCAT(w.lastName, \' \', w.firstName)) LIKE :search OR UPPER(w.team) LIKE :search')    
+            ->setParameter('search', '%' . strtoupper($search) . '%')
             ->orderBy('w.team,w.lastName,w.firstName', 'ASC')
             ->setMaxResults($maxResults);
 
