@@ -41,6 +41,12 @@ class CompanyConfig
     #[ORM\Column(options: ['default' => true])]
     private bool $useAccountDynPan = true;
 
+    #[ORM\Column(options: ['default' => 6])]
+    private int $panelMinSize = 6;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $panelMaxSize = null;
+
     ////////////// COMPETENCES //////////////
     #[ORM\Column(options: ['default' => true])]
     private bool $questComp = true;
@@ -224,6 +230,30 @@ class CompanyConfig
     public function setFdb360askPanelToHierarchy(bool $fdb360askPanelToHierarchy): static
     {
         $this->fdb360askPanelToHierarchy = $fdb360askPanelToHierarchy;
+
+        return $this;
+    }
+
+    public function getPanelMinSize(): int
+    {
+        return $this->panelMinSize;
+    }
+
+    public function setPanelMinSize(int $panelMinSize): static
+    {
+        $this->panelMinSize = $panelMinSize;
+
+        return $this;
+    }
+
+    public function getPanelMaxSize(): ?int
+    {
+        return $this->panelMaxSize;
+    }
+
+    public function setPanelMaxSize(?int $panelMaxSize): static
+    {
+        $this->panelMaxSize = $panelMaxSize;
 
         return $this;
     }

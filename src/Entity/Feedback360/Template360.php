@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\UniqueConstraint(name: '', columns: ['name', 'version', 'company_id'])]
 #[ORM\Entity(repositoryClass: Template360Repository::class)]
-class Template360
+class Template360 implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -252,5 +252,10 @@ class Template360
         }
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->name . ' (v' . $this->version . ') @' . $this->company?->getName();
     }
 }

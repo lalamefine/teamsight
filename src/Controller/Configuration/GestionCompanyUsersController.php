@@ -12,9 +12,7 @@ use Doctrine\Common\Collections\Order;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface;
 
 final class GestionCompanyUsersController extends AbstractCompanyController
 {
@@ -179,7 +177,7 @@ final class GestionCompanyUsersController extends AbstractCompanyController
 
             // Reauthenticate the user to refresh the token with new roles
             $this->em->refresh($this->getUser());
-            $tokenStorage->setToken(new PostAuthenticationToken($this->getUser(), 'main', $this->getUser()->getRoles()));
+            // $tokenStorage->setToken(new PostAuthenticationToken($this->getUser(), 'main', $this->getUser()->getRoles())); //FIXME
 
             $this->addFlash('success', 'Users imported successfully.'); 
             return $this->redirectToRoute('app_gestion_company_users', [

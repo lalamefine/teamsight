@@ -9,7 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: Question360Repository::class)]
-class Question360
+class Question360 implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -153,4 +153,8 @@ class Question360
         return $this;
     }
 
+    public function __toString(): string
+    {
+        return $this->thematique . ' / ' . $this->libelle;
+    }
 }

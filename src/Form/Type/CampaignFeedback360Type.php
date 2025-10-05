@@ -13,7 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CampagneFeedback360Type extends AbstractType
+class CampaignFeedback360Type extends AbstractType
 {
     private ?Company $forCompany;
     public function __construct(private Security $security){
@@ -41,25 +41,29 @@ class CampagneFeedback360Type extends AbstractType
                 'label' => 'Message présenté en-tête des questionnaires',
                 'attr' => ['rows' => 3, 'readonly' => $options['data']?->isStateOrAfter(CampaignFeedback360::STATE_ANS_OPEN) ?? false],
                 'required' => true
+            ])
+            ->add('beginAt', DateType::class, [
+                'label' => 'Date de début',
+                'required' => false,
+                'row_attr' => ['class' => 'col'],
+            ])
+            ->add('endAt', DateType::class, [
+                'label' => 'Date de fin',
+                'required' => false,
+                'row_attr' => ['class' => 'col'],
             ]);
-            // ->add('beginAt', DateType::class, [
-            //     'label' => 'Date de début (Envoi automatique des questionnaires)',
-            //     'required' => false,                
-            // ])
-            // ->add('endAt', DateType::class, [
-            //     'label' => 'Date de fin',
-            //     'required' => false,
-            // ])
         
         if ($this->forCompany->getConfig()->isFdb360askPanelToEvalue()) {
             $builder
                 ->add('panelProposalOpenedAt', DateType::class, [
                     'label' => 'Date d\'ouverture de la proposition de panel par les évalués',
                     'required' => false,
+                    'row_attr' => ['class' => 'col'],
                 ])
                 ->add('panelProposalEvalueClosedAt', DateType::class, [
                     'label' => 'Date de clôture de la proposition de panel par les évalués',
                     'required' => false,
+                    'row_attr' => ['class' => 'col'],
                 ]);
         }
         if ($this->forCompany->getConfig()->isFdb360askPanelToHierarchy()) {
@@ -67,6 +71,7 @@ class CampagneFeedback360Type extends AbstractType
                 ->add('panelProposalHierarchyClosedAt', DateType::class, [
                     'label' => 'Date de clôture de la confirmation de panel par la hiérarchie',
                     'required' => false,
+                    'row_attr' => ['class' => 'col'],
                 ]);
         }
 

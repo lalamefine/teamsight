@@ -1,0 +1,3 @@
+autoadmin:
+    resource: '@LalamefineAutoadminBundle/config/routes.yaml'
+    prefix: autoadmin

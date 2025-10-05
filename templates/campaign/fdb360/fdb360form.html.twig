@@ -1,0 +1,44 @@
+<div class="bg-white shadow p-3 rounded col{{ campaign ? '-6' : '' }}" >
+    {% if campaign %}
+        <h3>Gestion de la campagne</h3>
+    {% else %}
+        <h3>Création d'une nouvelle campagne</h3>
+    {% endif %}
+
+    {{ form_start(form) }}
+    <div class="mb-3">
+        {{ form_row(form.name) }}
+    </div>
+    <div class="mb-3">
+        {{ form_row(form.message) }}
+    </div>
+    <div class="row">
+        <div class="col d-flex">
+            {{ form_row(form.beginAt) }}
+        </div>
+        <div class="col d-flex">
+            {{ form_row(form.endAt) }}
+        </div>
+    </div>
+
+    {% if form.panelProposalOpenedAt is defined %}
+        <div class="row">
+            <div class="col d-flex">
+                {{ form_row(form.panelProposalOpenedAt) }}
+            </div>
+            <div class="col d-flex">
+                {{ form_row(form.panelProposalEvalueClosedAt) }}
+            </div>
+            {% if form.panelProposalHierarchyClosedAt is defined %}
+                <div class="col d-flex">
+                    {{ form_row(form.panelProposalHierarchyClosedAt) }}
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="mt-3">
+        {{ form_row(form.submit) }}
+    </div>
+    {{ form_end(form) }}
+</div>

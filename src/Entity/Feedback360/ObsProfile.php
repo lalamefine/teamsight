@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ObsProfileRepository::class)]
-class ObsProfile
+class ObsProfile implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -174,5 +174,10 @@ class ObsProfile
         $this->selectableManually = $selectableManually;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->name . '@' . $this->company->getName();
     }
 }

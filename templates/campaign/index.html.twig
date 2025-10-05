@@ -7,13 +7,13 @@
         <div class="bg-white shadow p-4 rounded w-100" >
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1>Gestion des campagnes</h1>
-                <a href="{{ path('app_campagne_new_generic') }}" class="btn {{ campagnes is empty ? 'btn-primary' : 'btn-secondary' }}">
+                <a href="{{ path('app_campaign_new_generic') }}" class="btn {{ campaigns is empty ? 'btn-primary' : 'btn-secondary' }}">
                     <span class="bi bi-plus"></span>
                     Créer une nouvelle campagne
                 </a>
             </div>
 
-            {% if campagnes is empty %}
+            {% if campaigns is empty %}
                 <p>Aucune campagne trouvée.</p>
             {% else %}
                 <table class="table table-bordered table-hover">
@@ -26,11 +26,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for campagne in campagnes %}
+                        {% for campaign in campaigns %}
                             <tr>
-                                <td><a href="{{path('app_campagne_manage_fdb360_edit', {'campagne' : campagne.id } )}}">{{ campagne.name }}</a></td>
-                                <td>{{ campagne.beginAt ? campagne.beginAt|date('d/m/Y') : '-' }}</td>
-                                <td>{{ campagne.endAt ? campagne.endAt|date('d/m/Y') : '-' }}</td>
+                                <td><a href="{{path('app_campaign_manage_fdb360_edit', {'campaign' : campaign.id } )}}">{{ campaign.name }}</a></td>
+                                <td>{{ campaign.beginAt ? campaign.beginAt|date('d/m/Y') : '-' }}</td>
+                                <td>{{ campaign.endAt ? campaign.endAt|date('d/m/Y') : '-' }}</td>
                                 <td></td>
                             </tr>
                         {% endfor %}

@@ -8,31 +8,41 @@ use App\Entity\Feedback360\Observer;
 use App\Repository\Feedback360\ObserverRepository;
 use App\Repository\Feedback360\ObsProfileRepository;
 use App\Repository\WebUserRepository;
+use App\Service\HTMXResponsesService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class Obsevation360Controller extends AbstractCompanyController
 {
-    #[Route('/obsevation360/{id}/panel', name: 'observation_panel_edit')]
-    public function panel(Observation360 $observation): Response
+
+    #[Route('/obs360/{id}', name: 'observation_view')]
+    public function view(Observation360 $observation): Response
     {
-        return $this->render('campagne\fdb360-obs\panel.html.twig', [
+        return $this->render('campaign\fdb360-obs\view.html.twig', [
             'observation' => $observation,
         ]);
     }
 
-    #[Route('/obsevation360/{id}/delete', name: 'observation_delete', methods: ['DELETE'])]
+    #[Route('/obs360/{id}/panel', name: 'observation_panel_edit')]
+    public function panel(Observation360 $observation): Response
+    {
+        return $this->render('campaign\fdb360-obs\panel.html.twig', [
+            'observation' => $observation,
+        ]);
+    }
+
+    #[Route('/obs360/{id}/delete', name: 'observation_delete', methods: ['DELETE'])]
     public function delete(Observation360 $observation360): Response
     {
         $this->em->remove($observation360);
         $this->em->flush();
-        return $this->redirectToRoute('app_campagne_manage_fdb360_content', [
-            'campagne' => $observation360->getCampaign()->getId(),
+        return $this->redirectToRoute('app_campaign_manage_fdb360_content', [
+            'campaign' => $observation360->getCampaign()->getId(),
         ]);
     }
 
-    #[Route('/obsevation360/observers/remove/{id}', name: 'observation_remove_observer', methods: ['DELETE'])]
+    #[Route('/obs360/observers/remove/{id}', name: 'observation_remove_observer', methods: ['DELETE'])]
     public function removeObserver(int $id, ObserverRepository $observerRepository): Response
     {
         $observer = $observerRepository->find($id);
@@ -44,7 +54,7 @@ final class Obsevation360Controller extends AbstractCompanyController
         return new Response('');
     }
 
-    #[Route('/obsevation360/{id}/observers/add/modal', name: 'observation_add_observer_modal', methods: ['GET'])]
+    #[Route('/obs360/{id}/observers/add/modal', name: 'observation_add_observer_modal', methods: ['GET'])]
     public function addObserverModal(Observation360 $observation360, Request $request, WebUserRepository $webUserRepository, ObsProfileRepository $obsProfileRepository): Response
     {
         // Search Logic
@@ -56,7 +66,7 @@ final class Obsevation360Controller extends AbstractCompanyController
             ]);
         }
 
-        return $this->render('campagne\fdb360-obs\searchAgentModal.html.twig', [
+        return $this->render('campaign/fdb360-obs/searchAgentModal.html.twig', [
             'profiles' => $obsProfileRepository->findBy([
                 'company' => $this->getCompany(),
                 'selectableManually' => true,
@@ -65,36 +75,40 @@ final class Obsevation360Controller extends AbstractCompanyController
         ]);
     }
 
-    #[Route('/obsevation360/{id}/observers/add', name: 'observation_add_observer', methods: ['POST'])]
-    public function addObserverAction(Observation360 $observation360, Request $request, WebUserRepository $webUserRepository, ObsProfileRepository $obsProfileRepository): Response
+    #[Route('/obs360/{id}/observers/add', name: 'observation_add_observer', methods: ['POST'])]
+    public function addObserverAction(Observation360 $observation360, Request $request, WebUserRepository $webUserRepository, ObsProfileRepository $obsProfileRepository, HTMXResponsesService $htmx): Response
     {
-        if ($request->request->all()['userIds'] ?? null) {
-            $userIds = $request->request->all()['userIds'];
-            $users = $webUserRepository->findByIdIn($this->getCompany(), $userIds);
+        if ($request->request->get('userId') ?? null) {
+            $userId = $request->request->get('userId');
+            $user = $webUserRepository->findOneBy([
+                'company' => $this->getCompany(),
+                'id' => $userId
+            ]);
 
             $profileId = $request->request->get('profileId');
             $profile = $obsProfileRepository->find($profileId);
             if (!$profile) {
                 $this->addFlash('error', 'Profile non trouvé.');
-                return $this->redirectToRoute('observation_panel_edit', ['id' => $observation360->getId()]);
+                return $htmx->pageRefresh();
             }
             if($profile->getCompany() !== $this->getCompany()) {
                 $this->addFlash('error', 'Vous ne pouvez pas utilliser ce profil pour cette observation.');
-                return $this->redirectToRoute('observation_panel_edit', ['id' => $observation360->getId()]);
+                return $htmx->pageRefresh();
             }
 
-            foreach ($users as $user) {
-                if ($observation360->hasObserver($user)) {
-                    $this->addFlash('error', "L'utillisateur : " . $user->getFullName() . ' est déjà associé à cette observation.');
-                    continue;
-                }
-                $observer = new Observer($observation360, $user, $profile);
-                $observation360->addObserver($observer);
-                $this->em->persist($observer);
-                $this->em->flush();
+            if ($observation360->hasObserver($user)) {
+                $this->addFlash('error', "L'utillisateur : " . $user->getFullName() . ' est déjà associé à cette observation.');
+                return $htmx->pageRefresh();
             }
+            $observer = new Observer($observation360, $user, $profile);
+            $observation360->addObserver($observer);
+            $this->em->persist($observer);
+            $this->em->flush();
         }
 
-        return $this->redirectToRoute('observation_panel_edit', ['id' => $observation360->getId()]);
+        return $this->renderBlock('campaign\fdb360-obs\panel.html.twig', 'obsRow', [
+            'observer' => $observer,
+            'observation' => $observation360,
+        ]);
     }
 }

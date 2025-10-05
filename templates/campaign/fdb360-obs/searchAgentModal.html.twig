@@ -1,0 +1,39 @@
+<form hx-post="{{ path('observation_add_observer', { id: observation.id }) }}" hx-target="#observerList" hx-swap="beforeend" class="border p-3 rounded bg-light">
+    <h5>Rechercher : </h5>
+    <div class="mb-3 input-group">
+        <select class="form-select" name="profileId" required style="max-width: 300px;">
+            <option value="" disabled selected>Choisir un profil</option>
+            {% for profile in profiles %}
+                <option value="{{ profile.id }}" warn-for-validation="{{profile.canValidateReport ? 'true' : 'false'}}">{{ profile.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" class="form-control" placeholder="Rechercher par nom, email, id, équipe" aria-label="Rechercher" name="search"
+            hx-get="{{ path('observation_add_observer_modal', { id: observation.id }) }}"
+            hx-target="#searchResults" hx-swap="innerHTML" 
+            hx-trigger="keyup changed delay:500ms" autocomplete="off"
+            hx-indicator="#userModalLoading"
+        >
+    </div>
+    <div class="text-muted m-1 d-none" id="validationNote">
+        <small>Note: Ce profil aura le droit de consulter et valider le rapport.</small>
+    </div>
+    <input type="hidden" class="form-control mt-2" name="observationId" value="{{ observation.id }}">
+    <div class="mt-3" id="searchResults">
+        <!-- Results will be populated here -->
+    </div>
+    <div class="spinner-border text-primary mt-2 htmx-indicator" id="userModalLoading" role="status">
+        <span class="d-none">Loading...</span>
+    </div>
+</form>
+<script>
+    $(document).ready(function() {
+        // Show validation note when a profile is selected
+        $('select[name="profileId"]').on('change', function() {
+            if ($(this).find(':selected').attr('warn-for-validation') == 'true') {
+                $('#validationNote').removeClass('d-none');
+            } else {
+                $('#validationNote').addClass('d-none');
+            }
+        });
+    })
+</script>

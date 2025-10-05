@@ -67,7 +67,7 @@ class CampaignFeedback360 implements CampaignInterface
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $message = null;
 
-    #[ORM\Column(type: Types::SIMPLE_ARRAY, options: ['default' => '[]'])]
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, options: ['default' => ''])]
     private array $features = [];
     private const FEATURE_PANEL_EVALUE_PROPOSAL = 'panel_evalueProposal';
     private const FEATURE_PANEL_HIERARCHY_PROPCONF = 'panel_hierarchyConfirmation';
@@ -86,12 +86,37 @@ class CampaignFeedback360 implements CampaignInterface
     private Collection $observation360s;
 
     #[ORM\ManyToOne(inversedBy: 'campaignFeedback360s')]
-    private ?template360 $baseTemplate = null; 
+    private ?Template360 $baseTemplate = null;
 
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->observation360s = new ArrayCollection();
+    }
+
+    public function isReadyToStart(): bool
+    {
+        if($this->company->getConfig()->isFdb360askPanelToHierarchy()) {
+            $allowedStartState = self::STATE_PROP_HI_CLOSED;
+        }elseif($this->company->getConfig()->isFdb360askPanelToEvalue()) {
+            $allowedStartState = self::STATE_PROP_EV_CLOSED;
+        }else{
+            $allowedStartState = self::STATE_DRAFT;
+        }
+        if($this->observation360s->isEmpty()){
+            return false;
+        }
+        return ($this->currentState === $allowedStartState) && $this->arePanelsValid();
+    }
+
+    public function arePanelsValid(): bool
+    {
+        foreach ($this->observation360s as $obs) {
+            if ($obs->getState() === Observation360::STATE_READY && !$obs->isPanelSizeValid()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public function getId(): ?int
@@ -335,6 +360,10 @@ class CampaignFeedback360 implements CampaignInterface
     }
 
     public function autoUpdateState(){
+        foreach ($this->getObservation360s() as $obs) {
+            $obs->autoUpdateState();
+        }
+
         if($this->currentState == self::STATE_CONF){
             if($this->name !== null && $this->message !== null)
                 $this->setCurrentState(self::STATE_DRAFT);
@@ -429,12 +458,12 @@ class CampaignFeedback360 implements CampaignInterface
         return $this;
     }
 
-    public function getBaseTemplate(): ?template360
+    public function getBaseTemplate(): ?Template360
     {
         return $this->baseTemplate;
     }
 
-    public function setBaseTemplate(?template360 $baseTemplate): static
+    public function setBaseTemplate(?Template360 $baseTemplate): static
     {
         $this->baseTemplate = $baseTemplate;
 

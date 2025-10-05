@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ObserverRepository::class)]
-class Observer
+class Observer implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -146,6 +146,11 @@ class Observer
         $this->profile = $profile;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->agent->getFullName() . ' 🡆 ' . $this->observation->__toString();
     }
 
 }

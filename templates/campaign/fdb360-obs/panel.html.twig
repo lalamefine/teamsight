@@ -1,0 +1,78 @@
+{% extends "base.html.twig" %}
+
+
+{% block body %}
+    <div class="container pt-3">
+        <div class="rounded p-4 bg-white shadow">
+            <h4 class="px-2">Gestion du panel pour l'observation de {{observation.agent.name}}</h4>
+            <h6 class="px-2 text-muted">Associé à la campagne : <a href="{{ path('app_campaign_manage_fdb360_edit', {'campaign': observation.campaign.id}) }}">{{observation.campaign.name}}</a></h6>
+            <hr>
+            <div hx-confirm="Etes vous sur ?" hx-target="closest .obsRow" hx-swap="outerHTML swap:0.5s">
+                <div class="obsRow p-2 d-flex align-items-center">
+                    <b class="col-6">Nom de l'observateur</b>
+                    <b class="col">Profil</b>
+                    <b class="col"></b>
+                </div>
+                <div id="observerList">
+                {% for observer in observation.observers %}
+                    {% block obsRow %}
+                        <div class="obsRow p-2 m-1 d-flex align-items-center ">
+                            <div class="col-6">{{ observer.name }}</div>
+                            <div class="col">
+                                {{observer.profile.name}}
+                            </div>
+                            <div class="col d-flex">
+                                {% if observer.agent != observation.agent %}
+                                    {% if observer.startedAt is null %}
+                                        <button class="btn btn-sm btn-danger" hx-delete="{{ path('observation_remove_observer', {'id': observer.id}) }}">
+                                            <i class="bi bi-trash"></i> Retirer
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-sm btn-grey" disabled>
+                                            Observation en cours
+                                        </button>
+                                    {% endif %}
+                                {% else %}
+                                    <button class="btn btn-sm btn-grey" disabled>
+                                    <i class="bi bi-lock"></i>
+                                        Auto-évaluation
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endblock %}
+                {% endfor %}
+                </div>
+            </div>
+            <div id="searchObsContent" class="p-2">
+                <div class="d-flex justify-content-between mb-2 ms-2">
+                    {% if observation.isStateBefore('closed') %}
+                        <button type="button" class="btn btn-sm btn-primary" 
+                            hx-get="{{ path('observation_add_observer_modal', {'id': observation.id}) }}"
+                            hx-target="#searchObsContent">
+                            <i class="bi bi-plus"></i> Ajouter un observateur
+                        </button>
+                    {% else %}
+                        <button type="button" class="btn btn-sm btn-secondary" disabled>
+                            <i class="bi bi-lock"></i> Observation clôturée
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .obsRow.htmx-swapping {
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+        .obsRow {
+            border-bottom: 1px solid #ddd;
+        }
+        .obsRow:last-child {
+            border-bottom: none;
+        }
+    </style>
+
+{% endblock %}

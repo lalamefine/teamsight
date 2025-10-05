@@ -1,0 +1,137 @@
+
+<div class="bg-white shadow p-3 rounded col h-full" >
+    <h3>Etapes</h3>
+    {% set stepN = 0 %}
+    <div class="p-2 w-100"></div>
+    <div class="step {{ campaign.currentState == 'conf' ? 'step-active' : '' }}"> 
+        <div> {% set stepN = stepN + 1 %}
+            <div class="circle">
+            {% if campaign.isStateAfter('conf') %}
+                <i class="bi bi-check"></i>
+            {% else %}
+                {{ stepN }}
+            {% endif %}
+            </div><div class="line"></div>
+        </div>
+        <div>
+            <div class="title">Configuration de la campagne</div>
+        </div>
+    </div>
+    <div class="step {{ campaign.currentState == 'draft' ? 'step-active' : '' }}">
+        <div> {% set stepN = stepN + 1 %}
+            <div class="circle">
+                {% if campaign.isStateAfter('draft') %}
+                    <i class="bi bi-check"></i>
+                {% else %}
+                    {{ stepN }}
+                {% endif %}
+            </div><div class="line"></div>
+        </div>
+        <div>
+            {% if campaign.haveFeature('panel_evalueProposal') or campaign.haveFeature('panel_hierarchyConfirmation') %}
+                <div class="title">Ajout des observés</div>
+            {% else %}
+                <div class="title">Ajout des observés et constitution des panels</div>
+            {% endif %}
+        </div>
+    </div>
+    {% if campaign.haveFeature('panel_evalueProposal') %}
+        <div class="step {{ campaign.currentState == 'proposal_open' ? 'step-active' : '' }}">
+            <div> {% set stepN = stepN + 1 %}
+                <div class="circle">
+                    {% if campaign.isStateAfter('proposal_open') %}
+                        <i class="bi bi-check"></i>
+                    {% else %}
+                        {{ stepN }}
+                    {% endif %}
+                </div><div class="line"></div>
+            </div>
+            <div>
+                <div class="title">Proposition d'un panel par les observés</div>
+            </div>
+        </div>
+    {% endif %}
+    {% if campaign.haveFeature('panel_hierarchyConfirmation') %}
+        <div class="step {{ campaign.currentState == 'proposal_evalue_closed' ? 'step-active' : '' }}">
+            <div> {% set stepN = stepN + 1 %}
+                <div class="circle">
+                    {% if campaign.isStateAfter('proposal_evalue_closed') %}
+                        <i class="bi bi-check"></i>
+                    {% else %}
+                        {{ stepN }}
+                    {% endif %}
+                </div><div class="line"></div>
+            </div>
+            <div>
+                <div class="title">Proposition (ou confirmation) d'un panel par les supérieurs hiérarchiques</div>
+            </div>
+        </div>
+    {% endif %}
+    {% if campaign.haveFeature('panel_evalueProposal') or campaign.haveFeature('panel_hierarchyConfirmation') %}
+        <div class="step {{ campaign.currentState == 'proposal_hierarchy_closed' ? 'step-active' : '' }}">
+            <div> {% set stepN = stepN + 1 %}
+                <div class="circle">
+                    {% if campaign.isStateAfter('proposal_hierarchy_closed') %}
+                        <i class="bi bi-check"></i>
+                    {% else %}
+                        {{ stepN }}
+                    {% endif %}
+                </div><div class="line"></div>
+            </div>
+            <div>
+                <div class="title">
+                    Vérification des panels par le gestionnaire de la campagne
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <div class="step {{ campaign.currentState == 'ready' ? 'step-active' : '' }}">
+        <div> {% set stepN = stepN + 1 %}
+            <div class="circle">
+                {% if campaign.isStateAfter('ready') %}
+                    <i class="bi bi-check"></i>
+                {% else %}
+                    {{ stepN }}
+                {% endif %}
+            </div><div class="line"></div>
+        </div>
+        <div>
+            <div class="title">Attente de la date de début</div>
+            {% if campaign.beginAt is not null %}
+                <div class="caption">La campagne débutera le {{ campaign.beginAt|date('d/m/Y') }}.</div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="step {{ campaign.currentState == 'answ_opened' ? 'step-active' : '' }}">
+        <div> {% set stepN = stepN + 1 %}
+            <div class="circle">
+                {% if campaign.isStateAfter('answ_opened') %}
+                    <i class="bi bi-check"></i>
+                {% else %}
+                    {{ stepN }}
+                {% endif %}
+            </div><div class="line"></div>
+        </div>
+        <div>
+            <div class="title">Réalisation de la campagne</div>
+            {% if campaign.endAt is not null %}
+                <div class="caption">La campagne se termine le {{ campaign.endAt|date('d/m/Y') }}.</div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="step {{ campaign.currentState == 'answ_closed' ? 'step-active' : '' }}">
+        <div> {% set stepN = stepN + 1 %}
+            <div class="circle">
+                {% if campaign.isStateAfter('answ_closed') %}
+                    <i class="bi bi-check"></i>
+                {% else %}
+                    {{ stepN }}
+                {% endif %}
+            </div><div class="line"></div>
+        </div>
+        <div>
+            <div class="title">Fin des réponses et analyse des résultats</div>
+        </div>
+    </div>
+</div>
+
