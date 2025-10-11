@@ -42,7 +42,7 @@ final class Template360Controller extends AbstractCompanyController
             $this->em->flush();
             $this->addFlash('success', 'Template updated successfully');
         }
-        return $this->render('configuration/template360/index.html.twig', [
+        return $this->render('administration/template360/index.html.twig', [
             'newTemplate' => $selectedTemplateId === 'new',
             'selectedTemplate' => $selectedTemplate
         ]);
@@ -51,7 +51,7 @@ final class Template360Controller extends AbstractCompanyController
     #[Route('/cf/t360/{template}/questions', name: 'app_conf_templates_360_question_list', methods:['GET'])]
     public function questionList(Template360 $template): Response
     {
-        return $this->render('configuration/template360/questionList.html.twig', [
+        return $this->render('administration/template360/questionList.html.twig', [
             'questions' => $template->getQuestions(),
             'template' => $template,
         ]);
@@ -98,7 +98,7 @@ final class Template360Controller extends AbstractCompanyController
             $this->em->flush();
             return $this->questionList($template);
         }
-        return $this->render('configuration/template360/questionEditModal.html.twig', [
+        return $this->render('administration/template360/questionEditModal.html.twig', [
             'template' => $template,
             'question' => $question360,
         ]);

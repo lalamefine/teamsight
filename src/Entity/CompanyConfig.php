@@ -13,6 +13,7 @@ class CompanyConfig
     #[ORM\JoinColumn(nullable: false)]
     private ?Company $company = null;
 
+    // $list = ['email', 'company', 'app'];
     #[ORM\Column(length: 32, options: ['default' => 'email'])]
     private ?string $agtIdType = 'email';
 

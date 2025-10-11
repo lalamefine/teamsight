@@ -4,10 +4,16 @@
 {% endblock %}
 
 {% block body %}
-	<div class="example-wrapper">
-		<h1>Dashboard</h1>
+	<div class="container pt-3">
+		<h1>Accueil</h1>
+
+		{% if app.user.waitingQuest > 0 %}
+			<div class="alert alert-info">
+				Vous avez été sollicité pour répondre à des questionnaires.
+			</div>
+		{% endif %}
+		{% for observer360 in app.user.responses360ToDo %}
+			{% include "campaign/fdb360-obs/card.html.twig" with {'observer': observer360, 'observation': observer360.observation} %}
+		{% endfor %}
 	</div>
-
-	<a class="nav-link" href="{{ path('app_campaign') }}">Campagnes</a>
-
 {% endblock %}

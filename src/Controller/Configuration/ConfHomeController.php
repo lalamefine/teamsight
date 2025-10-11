@@ -13,7 +13,7 @@ final class ConfHomeController extends AbstractController
     #[Route('/conf', name: 'app_conf')]
     public function index(#[CurrentUser()] WebUser $webuser): Response
     {
-        return $this->render('configuration/confHome/index.html.twig', [
+        return $this->render('administration/confHome/index.html.twig', [
             'userCompanyConfig' => $webuser->getCompany()?->getConfig(),
         ]);
     }

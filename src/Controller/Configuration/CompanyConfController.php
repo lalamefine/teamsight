@@ -54,7 +54,7 @@ final class CompanyConfController extends AbstractCompanyController
             $this->addFlash('success', 'Configuration enregistrée avec succès.');
         }
         
-        return $this->render('configuration/confCompany/index.html.twig', [
+        return $this->render('administration/confCompany/index.html.twig', [
             'company' => $this->getCompany(),
             'companyConfig' => $companyConfig
         ]);
@@ -124,7 +124,7 @@ final class CompanyConfController extends AbstractCompanyController
             $this->addFlash('success', 'Configuration enregistrée avec succès.');
         }
 
-        return $this->render('configuration/confCompany/campaign.html.twig', [ 
+        return $this->render('administration/confCompany/campaign.html.twig', [ 
             'company' => $this->getCompany(),
             'companyConfig' => $companyConfig,
         ]);

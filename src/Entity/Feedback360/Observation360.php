@@ -108,6 +108,32 @@ class Observation360 implements \Stringable
 
     public function setState(string $state): static
     {
+        if(!in_array($state, self::STATES, true)) {
+            throw new \InvalidArgumentException("Invalid state: '$state'");
+        }
+        switch ($state) {
+            case self::STATE_OPEN:
+                if($this->state !== self::STATE_READY) {
+                    throw new \LogicException("Cannot open an observation that is not in ready state.");
+                }
+                $this->observers->map(function(Observer $observer) {
+                    if ($observer->getState() === Observer::STATE_LOCKED) {
+                        $observer->setState(Observer::STATE_WAITING);
+                    }
+                    return $observer;
+                });
+                break;
+            case self::STATE_CLOSED:
+                if($this->state !== self::STATE_OPEN) {
+                    throw new \LogicException("Cannot close an observation that is not in open state.");
+                }
+                $this->observers->map(function(Observer $observer) {
+                    if (in_array($observer->getState(), [Observer::STATE_WAITING, Observer::STATE_IN_PROGRESS], true)) {   
+                        $observer->setState(Observer::STATE_LOCKED);
+                    }
+                    return $observer;
+                });
+        }
         $this->state = $state;
 
         return $this;

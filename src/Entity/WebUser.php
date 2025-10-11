@@ -5,10 +5,11 @@ namespace App\Entity;
 use App\Abstraction\CompanyUserInterface;
 use App\Entity\Feedback360\Observation360;
 use App\Entity\Feedback360\Observer;
-use App\Entity\Feedback360\Observers;
 use App\Repository\WebUserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
@@ -75,6 +76,11 @@ class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterfac
     public function __construct()
     {
         $this->observation360s = new ArrayCollection();
+    }
+
+    public function getWaitingQuest(): int
+    {
+        return $this->getResponses360ToDo()->count() + 0; // COMPLETE with other quest types
     }
 
     public function getUserIdentifier(): string
@@ -266,6 +272,57 @@ class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterfac
         return $this->observation360s;
     }
 
+    /**
+     * @return Collection<int, Observation360>
+     */
+    public function getObservation360sInState(string $state): Collection
+    {
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->eq('state', $state))
+            ->orderBy(['id' => 'DESC']);
+        $col = $this->observation360s;
+        if ( ! ($col instanceof Selectable)) {
+            $col = new ArrayCollection($col->toArray());
+        }
+        return $col->matching($criteria);
+    }
+    /**
+     * @return Collection<int, Observation360>
+     */
+    public function getOpen360(): Collection
+    {
+        return $this->getObservation360sInState(Observation360::STATE_OPEN);
+    }
+
+    /**
+     * @return Collection<int, Observer>
+     */
+    public function getObserveIn360InState(string $state): Collection
+    {
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->eq('state', $state))
+            ->orderBy(['id' => 'DESC']);
+        $col = $this->observeIn;
+        if ( ! ($col instanceof Selectable)) {
+            $col = new ArrayCollection($col->toArray());
+        }
+        return $col->matching($criteria);
+    }
+    /**
+     * @return Collection<int, Observer>
+     */
+    public function getResponses360ToDo(): Collection
+    {
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->in('state', [Observer::STATE_WAITING, Observer::STATE_IN_PROGRESS]))
+            ->orderBy(['id' => 'DESC']);
+        $col = $this->observeIn;
+        if ( ! ($col instanceof Selectable)) {
+            $col = new ArrayCollection($col->toArray());
+        }
+        return $col->matching($criteria);
+    }
+
     public function addObservation360(Observation360 $observation360): static
     {
         if (!$this->observation360s->contains($observation360)) {
@@ -289,7 +346,7 @@ class WebUser implements CompanyUserInterface, PasswordAuthenticatedUserInterfac
     }
 
     /**
-     * @return Collection<int, Observation360>
+     * @return Collection<int, Observer>
      */
     public function getObserveIn(): Collection
     {

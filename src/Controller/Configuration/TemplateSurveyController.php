@@ -11,6 +11,6 @@ final class TemplateSurveyController extends AbstractController
     #[Route('/cf/templateSurvey', name: 'app_conf_templates_survey')]
     public function index(): Response
     {
-        return $this->render('configuration/templateSurvey/index.html.twig', []);
+        return $this->render('administration/templateSurvey/index.html.twig', []);
     }
 }

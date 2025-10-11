@@ -11,6 +11,6 @@ final class TemplateEAController extends AbstractController
     #[Route('/cf/templateEA', name: 'app_conf_templates_ea')]
     public function index(): Response
     {
-        return $this->render('configuration/templateEA/index.html.twig', []);
+        return $this->render('administration/templateEA/index.html.twig', []);
     }
 }

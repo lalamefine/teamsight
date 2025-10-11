@@ -362,6 +362,11 @@ class CampaignFeedback360 implements CampaignInterface
     public function autoUpdateState(){
         foreach ($this->getObservation360s() as $obs) {
             $obs->autoUpdateState();
+            if($obs->isStateOrBefore(Observation360::STATE_READY)){
+                $obs->setState(Observation360::STATE_OPEN);
+            }else{
+                throw new \LogicException('All observations must be at least in READY state to auto update campaign state.');
+            }
         }
 
         if($this->currentState == self::STATE_CONF){

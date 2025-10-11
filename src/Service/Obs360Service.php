@@ -17,7 +17,7 @@ class Obs360Service
     public function __construct(
         private EntityManagerInterface $em,
         private Security $security,
-        private ObsProfileRepository $obsProfileRepository,
+        private ObsProfileRepository $obsProfileRepository
     )  { }
 
     private function getCurrentUser(): ?WebUser
@@ -55,5 +55,4 @@ class Obs360Service
         $this->em->persist($obs);
         $this->em->persist($observed);
     }
-    
 }

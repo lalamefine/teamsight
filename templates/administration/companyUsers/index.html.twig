@@ -19,13 +19,13 @@
     </form>
     <div class="bg-white shadow p-4 rounded w-100">
         {% if acSystem == "WebUI" %}
-            {% include 'configuration/companyUsers/webui/index.html.twig' %}
+            {% include 'administration/companyUsers/webui/index.html.twig' %}
         {% elseif acSystem == "CSV" %}
-            {% include 'configuration/companyUsers/csv.html.twig' %}
+            {% include 'administration/companyUsers/csv.html.twig' %}
         {% elseif acSystem == "Webhook" %}
-            {% include 'configuration/companyUsers/webhook.html.twig' %}
+            {% include 'administration/companyUsers/webhook.html.twig' %}
         {% elseif acSystem == "API" %}
-            {% include 'configuration/companyUsers/api.html.twig' %}
+            {% include 'administration/companyUsers/api.html.twig' %}
         {% endif %}        
     </div>
 </div>

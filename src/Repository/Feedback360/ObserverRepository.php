@@ -2,7 +2,9 @@
 
 namespace App\Repository\Feedback360;
 
+use App\Entity\Feedback360\Observation360;
 use App\Entity\Feedback360\Observer;
+use App\Entity\WebUser;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\Persistence\ManagerRegistry;

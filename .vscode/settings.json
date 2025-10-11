@@ -1,0 +1,6 @@
+{
+    "vscode-twig-goto.resourcePagePaths": [
+        "templates",
+        "templates/bundles"
+    ]
+}

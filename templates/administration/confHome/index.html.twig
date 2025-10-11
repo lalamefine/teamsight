@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Configuration{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="bg-white shadow p-4 rounded w-100 gap-3">
+        <h1>Configuration</h1>
+        <div class="d-flex flex-column gap-3">
+        {% if is_granted('ROLE_ENT_USER_MANAGER') %}
+            <div>
+                <a class="btn btn-primary" role="button" href="{{ path('app_gestion_company_users') }}">
+                    <i class="bi bi-people-fill"></i>
+                    Gestion Utilisateurs
+                </a>
+            </div>
+        {% endif %}
+        {% if is_granted('ROLE_SUPER_ADMIN') %}
+            <div>
+                <a class="btn btn-primary" role="button" href="{{ path('autoadmin_index') }}" hx-boost="false">
+                    <i class="bi bi-shield-lock"></i>
+                    Dashboard super-administrateur
+                </a>
+            </div>
+        {% endif %}
+        {% if is_granted('ROLE_ENT_ADMIN') %}
+            <div>
+                <a class="btn btn-primary" role="button" href="{{ path('app_conf_company') }}">
+                    <i class="bi bi-gear-fill"></i>
+                    Configuration Plateforme
+                </a>
+            </div>
+            <div>
+                <a class="btn btn-primary" role="button" href="{{ path('app_conf_company_campaigns') }}">
+                    <i class="bi bi-gear-fill"></i>
+                    Configuration Campagnes
+                </a>
+            </div>
+        {% endif %}
+        {% if is_granted('ROLE_T_360_MAN') %}
+            {% if userCompanyConfig.questFdb360 %}
+                <div>
+                    <a class="btn btn-primary" role="button" href="{{ path('app_conf_templates_360_list') }}">
+                        <i class="bi bi-file-earmark-text"></i>
+                        Templates Feedback 360
+                    </a>
+                </div>
+            {% endif %}
+        {% endif %}
+        {% if is_granted('ROLE_T_EA_MAN') %}
+            {% if userCompanyConfig.questEA %}
+                <div>
+                    <a class="btn btn-primary" role="button" href="{{ path('app_conf_templates_ea') }}">
+                        <i class="bi bi-file-earmark-text"></i>
+                        Templates Entretien Annuel
+                    </a>
+                </div>
+            {% endif %}
+        {% endif %}
+        {% if is_granted('ROLE_T_REFCOM_MAN') %}
+            {% if userCompanyConfig.questComp %}
+                <div>
+                    <a class="btn btn-primary" role="button" href="{{ path('app_conf_referentiel_comp') }}">
+                        <i class="bi bi-file-earmark-text"></i>
+                        Référentiel de compétences
+                    </a>
+                </div>
+            {% endif %}
+        {% endif %}
+        {% if is_granted('ROLE_T_ENSURV_MAN') %}
+            {% if userCompanyConfig.questPerc %}
+                <div>
+                    <a class="btn btn-primary" role="button" href="{{ path('app_conf_templates_survey') }}">
+                        <i class="bi bi-file-earmark-text"></i>
+                        Questionnaires perception de l'entreprise
+                    </a>
+                </div>
+            {% endif %}
+        {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

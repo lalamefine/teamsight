@@ -11,6 +11,6 @@ final class RefCompController extends AbstractCompanyController
     #[Route('/cf/refComp', name: 'app_conf_referentiel_comp')]
     public function index(): Response
     {
-        return $this->render('configuration/referentielComp/index.html.twig', []);
+        return $this->render('administration/referentielComp/index.html.twig', []);
     }
 }

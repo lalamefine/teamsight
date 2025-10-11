@@ -29,7 +29,7 @@ final class GestionCompanyUsersController extends AbstractCompanyController
     #[Route('/gestion/company/users', name: 'app_gestion_company_users')]
     public function index(): Response
     {
-        return $this->render('configuration/companyUsers/index.html.twig', []);
+        return $this->render('administration/companyUsers/index.html.twig', []);
     }
 
     #[Route('/gestion/company/users/webedit/list', name: 'app_gestion_company_users_list', methods: ['GET'])]
@@ -54,7 +54,7 @@ final class GestionCompanyUsersController extends AbstractCompanyController
         $total = $webUserRepository->matching($criterias)->count();
         $users = $webUserRepository->matching($criterias)->slice($offset*$pageLength, $pageLength);
 
-        return $this->render('configuration/companyUsers/webui/list.html.twig', [
+        return $this->render('administration/companyUsers/webui/list.html.twig', [
             'users' => $users,
             'currentpage' => $offset + 1,
             'lastpage' => ceil($total / $pageLength),
@@ -86,7 +86,7 @@ final class GestionCompanyUsersController extends AbstractCompanyController
             return $this->redirectToRoute('app_gestion_company_users');
         }
 
-        return $this->render('configuration/companyUsers/webui/edit.html.twig', [
+        return $this->render('administration/companyUsers/webui/edit.html.twig', [
             'targetuser' => $targetuser,
             'form' => $form
         ]);
@@ -108,7 +108,7 @@ final class GestionCompanyUsersController extends AbstractCompanyController
             $this->addFlash('success', 'User disabled successfully.');
             return $this->redirectToRoute('app_gestion_company_users');
         }else{
-            return $this->render('configuration/companyUsers/webui/delete.html.twig', [
+            return $this->render('administration/companyUsers/webui/delete.html.twig', [
                 'targetuser' => $targetuser,
             ]);
         }
@@ -248,7 +248,7 @@ final class GestionCompanyUsersController extends AbstractCompanyController
             $this->em->getConnection()->executeQuery($baseSql . $selectors, $params);     
             fclose($handle);
 
-            return $this->render('configuration/companyUsers/csv.html.twig', [
+            return $this->render('administration/companyUsers/csv.html.twig', [
                 'total' => $this->em->getConnection()->fetchOne("SELECT COUNT(*) FROM $tableName"),   
                 'first100' => !$confirmImport ? $this->em->getConnection()->fetchAllAssociative("SELECT * FROM $tableName LIMIT 100") : null,                        
             ]);

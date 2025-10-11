@@ -32,9 +32,9 @@
         </div>
         <div id="template-view" class="w-100 " >
             {% if selectedTemplate != null %}
-                {% include 'configuration/template360/aTemplate.html.twig' with { template: selectedTemplate, company: app.user.company } %}
+                {% include 'administration/template360/aTemplate.html.twig' with { template: selectedTemplate, company: app.user.company } %}
             {% elseif newTemplate %}
-                {% include 'configuration/template360/aTemplate.html.twig' with { template: null, company: app.user.company } %}
+                {% include 'administration/template360/aTemplate.html.twig' with { template: null, company: app.user.company } %}
             {% else %}
                 <div class="bg-light p-2 mb-5 rounded text-center">
                     Selectionner un template à modifier ou créer un nouveau
